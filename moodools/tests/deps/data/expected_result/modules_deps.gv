@@ -1,0 +1,9 @@
+digraph "Odoo dependencies" {
+	graph [overlap=false splines=true]
+	node [shape=box]
+	upper -> mid_a
+	upper -> mid_b
+	mid_a -> base
+	mid_a -> mid_b
+	mid_b -> base
+}
