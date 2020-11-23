@@ -1,0 +1,105 @@
+{
+  "creditor_company" : {
+    "partner_id": {
+      "name": "My Company",
+      "ref": "",
+      "vat": "IT04218940155",
+      "fiscalcode": "04218940155",
+      "street": "via Altinate, 108",
+      "city": "Padova",
+      "zip": "35121",
+      "state_id": {"code": "PD"}
+    },
+    "sia_code": "FBI8"
+  },
+
+  "creditor_bank_account": {
+    "abi": "08982",
+    "cab": "",
+    "number": "222244446666"
+  },
+
+  "currency_code": "E",
+
+  "lines": [
+
+    {
+      "debitor_partner": {
+        "name": "Kissa Komics S.R.L.",
+        "ref": "",
+        "fiscalcode": "",
+        "vat": "IT04483400281",
+        "street": "Via Morgagni 30/A ",
+        "city": "Padova",
+        "zip": "35121",
+        "state_id": {"code": "PD"}
+      },
+      "debitor_bank": {
+        "bank_name": "Banca Etica",
+        "abi": "05018",
+        "cab": "12101"
+      },
+      "invoice": {
+        "number": "FATT/2020/0069",
+        "date_invoice": "2020-10-29"
+      },
+      "duedate_move_line": {
+        "date_maturity": "2020-12-28",
+        "amount_residual": 36.60
+      }
+    },
+
+    {
+      "debitor_partner": {
+        "name": "Kissa Komics S.R.L.",
+        "ref": "",
+        "fiscalcode": "",
+        "vat": "IT04483400281",
+        "street": "Via Morgagni 30/A ",
+        "city": "Padova",
+        "zip": "35121",
+        "state_id": {"code": "PD"}
+      },
+      "debitor_bank": {
+        "bank_name": "Banca Etica",
+        "abi": "05018",
+        "cab": "12101"
+      },
+      "invoice": {
+        "number": "FATT/2020/0069",
+        "date_invoice": "2020-10-29"
+      },
+      "duedate_move_line": {
+        "date_maturity": "2020-11-28",
+        "amount_residual": 42.7
+      }
+    },
+
+    {
+      "debitor_partner": {
+        "name": "Kissa Komics S.R.L.",
+        "ref": "",
+        "fiscalcode": "",
+        "vat": "IT04483400281",
+        "street": "Via Morgagni 30/A ",
+        "city": "Padova",
+        "zip": "35121",
+        "state_id": {"code": "PD"}
+      },
+      "debitor_bank": {
+        "bank_name": "Banca Etica",
+        "abi": "05018",
+        "cab": "12101"
+      },
+      "invoice": {
+        "number": "FATT/2020/0069",
+        "date_invoice": "2020-10-29"
+      },
+      "duedate_move_line": {
+        "date_maturity": "2020-11-13",
+        "amount_residual": 42.70
+      }
+    }
+
+  ]
+}

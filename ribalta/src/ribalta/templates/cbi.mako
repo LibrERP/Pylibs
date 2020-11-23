@@ -1,0 +1,398 @@
+##
+##
+## Autore: Marco Tosato - Didotech Srl - 2020-11-20
+##
+##
+## Template per generazione documenti CBI secondo lo standard tecnico
+## descritto nel documento:
+##    Nome: CBI-ICI-001
+##    Versione: v. 6.01 - Pagine 21
+##    Ultimo aggiornamento 16-15-2006
+##    Autore: Segreteria Tecnica
+##    Revisore: D.ssa Liliana Fratini Passi
+##
+##
+<%
+    import re
+
+    # Enable debug messages
+    debug_active = False
+
+    # Block of convenience constants
+    R_IB_START = ' IB'
+    R_14_START = ' 14'
+    R_20_START = ' 20'
+    R_30_START = ' 30'
+    R_40_START = ' 40'
+    R_50_START = ' 50'
+    R_51_START = ' 51'
+    R_70_START = ' 70'
+    R_EF_START = ' EF'
+
+    R_END = '\r'
+
+    RECORDS_IN_EACH_RIBA = 7
+    BLANK_CHAR = ' '
+
+
+    # Block of convenience functions
+
+    def fldsz(first_char_index, last_char_index):
+        """Compute the size of a field in characters given the index of the
+        first and last characters of the field itself"""
+        return (last_char_index - first_char_index) + 1
+    # end fldsz
+
+    def riferimento_al_debito(invoice_num, invoice_date, amount):
+        msg = f'PER LA FATTURA N. {invoice_num} DEL {invoice_date.strftime("%d/%m/%Y")} IMP {amount}'.ljust(80, ' ')[:80]
+        msg_formatted = msg.ljust(80, ' ')[:80]
+        return msg_formatted
+    # end riferimento_al_debito
+
+    def f_rjust5_0(content):
+        return str(content).strip().rjust(5, '0')[:5]
+    # end f_rjust5_0
+
+    f_cab = f_rjust5_0
+    f_abi = f_rjust5_0
+    f_sia = f_rjust5_0
+
+    def f_acct_num(account_number):
+        return str(account_number).strip().ljust(12, '0')[:12]
+    # end f_acct_num
+
+    def loop_num_to_num_progr(loop_itration_number):
+        return str(loop_itration_number + 1).rjust(7, '0')[:7]
+    # end loop_num_to_num_progr
+
+    def f_num_of_records(num_of_records):
+        return str(num_of_records).rjust(7, '0')[:7]
+    # end f_num_of_records
+
+    f_num_of_disposizioni = f_num_of_records
+
+
+    def f_ljust_and_trim(content, width, fill_char):
+        return str(content).strip().ljust(width, fill_char)[:width]
+    # end ljust_and_trim
+
+    def f_ljust20(content):
+        """Left justify, pad with spaces to the left till 20 chars,
+        take the first 20 chars"""
+        return f_ljust_and_trim(content, 20, ' ')
+    # end f_ljust20
+
+    def f_ljust24(content):
+        """Left justify, pad with spaces to the left till 24 chars,
+        take the first 24 chars"""
+        return f_ljust_and_trim(content, 24, ' ')
+    # end f_ljust24
+
+    def f_ljust30(content):
+        """Left justify, pad with spaces to the left till 30 chars,
+        take the first 30 chars"""
+        return f_ljust_and_trim(content, 30, ' ')
+    # end f_ljust30
+
+    def f_ljust50(content):
+        """Left justify, pad with spaces to the left till 50 chars,
+        take the first 50 chars"""
+        return f_ljust_and_trim(content, 50, ' ')
+    # end f_ljust50
+
+    def f_ljust60(content):
+        """Left justify, pad with spaces to the left till 60 chars,
+        take the first 60 chars"""
+        return f_ljust_and_trim(content, 60, ' ')
+    # end f_ljust60
+
+    f_creditor_descr = f_ljust24
+
+    def f_amount_line(amount):
+        amount_cents = int(round(float(amount) * 100))
+        return str(amount_cents).rjust(13, '0')
+    # end f_amount_line
+
+    def f_amount_total(amount):
+        amount_cents = int(round(float(amount) * 100))
+        return str(amount_cents).rjust(15, '0')
+    # end f_amount_total
+
+    def f_fiscode(fiscode):
+        return fiscode.strip().ljust(16,' ')
+    # end f_fiscode
+
+    def f_docname(docname):
+        return docname.ljust(20, ' ')
+    # end f_doc_name
+
+    def f_lint_chars(content):
+        return re.sub(r'[^\w\s,.]+', '', content)
+    # end f_lint_chars
+
+%>\
+##
+##
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## Record IB
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+<%debug_active and print('R_IB_START')%>\
+## 1-3 - ' IB'
+${R_IB_START}\
+## 4-8 - Mittente: codice SIA dell'azienda mittente
+${doc.sia_code | f_sia}\
+## 9-13 - Ricevente: ABI banca assuntrice
+${doc.creditor_bank_account.abi | f_abi}\
+## 14-19 - Data creazione: data creazione del flusso da parte dell'azienda (GGMMAA)
+${doc.creation_date.strftime('%d%m%y')}\
+## 20-39 - Nome supporto: composizione libera, ma deve essere univoco nell'ambito della data di creazione a parità di mittente e ricevente
+${doc.name | f_docname}\
+## 40-45 - Campo libero: a disposizione del mittente
+${BLANK_CHAR * fldsz(40, 45)}\
+## 46-104 - Filler
+${BLANK_CHAR * fldsz(46, 104)}\
+## 105-111 - Qualificatore di flusso: non utilizzato da questa implementazione, riempire con spazi
+${BLANK_CHAR * fldsz(105, 111)}\
+## 112-113 - Filler
+${BLANK_CHAR * fldsz(112, 113)}\
+## 114 - Codice divisa: assume valore fisso 'E'
+${'E'}\
+## 115 - Filler
+${BLANK_CHAR}\
+## 116-120 - Non disponibile (riempire con spazi)
+${BLANK_CHAR * fldsz(116, 120)}\
+${R_END}
+##
+##
+##
+##
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## Lines
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+<%debug_active and print()%>\
+% for line in lines:
+<%
+    num_progr = loop_num_to_num_progr(loop.index)  # Numero progressivo della ricevuta (parte da '1')
+    num_disposizioni = loop.index + 1
+%>\
+##
+##
+##
+##
+## -------- Record 14
+<%debug_active and print('\tR_14_START')%>\
+## 1-3 - ' 14'
+${R_14_START}\
+## 4-10 - Numero progressivo: numero della disposizione all'interno del flusso
+${num_progr}\
+## 11-22 - Filler
+${' ' * fldsz(11, 22)}\
+## 21-28 - Data pagamento: data di scadenza (GGMMAA)
+${line.duedate.strftime('%d%m%y')}\
+## 29-33 - Causale: assume valore fisso '30000'
+30000\
+## 34-46 - Importo: importo della ricevuta in centesimi di Euro
+${line.amount | f_amount_line}\
+## 47 - Segno: assume valore fisso '-'
+-\
+## Coordinate banca assuntrice
+##     48-52 - ABI assuntrice
+##     53-57 - CAB assuntrice
+##     58-69 - Numero di conto
+${doc.creditor_bank_account.abi    | f_abi}\
+${doc.creditor_bank_account.cab    | f_cab}\
+${doc.creditor_bank_account.acc_number | f_acct_num}\
+## - - - - - - - - - -
+## Coordinate banca domiciliataria
+##     70-74 - ABI domiciliataria
+##     75-79 - CAB domiciliataria
+${line.debitor_bank.abi | f_abi}\
+${line.debitor_bank.cab | f_cab}\
+## - - - - - - - - - -
+## 80-91 - Filler
+${BLANK_CHAR * fldsz(80, 91)}\
+## Coordinate azienda creditrice
+##     92-96 - codice SIA del cliente ordinante
+##     97 - Tipo codice: assume valore fisso '4'
+##     98-113 - Codice cliente debitore: codice con il quale il debitore è conosciuto dal creditore
+##     114 - Flag tipo debitore: nel caso il debitore sia una banca va valorizzato con 'B', altrimenti va lasciato in bianco
+${doc.sia_code | f_sia}\
+4\
+${str(line.debitor_client_code).strip().ljust(fldsz(98, 113), ' ')[:fldsz(98, 113)]}\
+${BLANK_CHAR}\
+## - - - - - - - - - -
+## 115-119 - Filler
+${BLANK_CHAR * fldsz(115, 119)}\
+## 120 - Codice divisa: deve coincidere con l'omonimo campo del record 'IB' (valorizzato sempre a 'E')
+${'E'}\
+${R_END}
+##
+##
+##
+##
+## -------- Record 20
+<%debug_active and print('\tR_20_START')%>\
+## 1-3 - ' 20'
+${R_20_START}\
+## 4-10 - Numero progressivo: stesso valore omonimo campo del record 14
+${num_progr}\
+## Descrizione del creditore (4 segmenti da 24 caratteri)
+##     11-34 - Descrizione del creditore: primo segmento, testo libero
+##     35-58 - Descrizione del creditore: primo segmento, testo libero
+##     59-82 - Descrizione del creditore: primo segmento, testo libero
+##     83-106 - Descrizione del creditore: primo segmento, testo libero
+${doc.creditor_company_name        | f_creditor_descr}\
+${doc.creditor_company_addr_street | f_creditor_descr}\
+${doc.creditor_company_addr_zip    | f_creditor_descr}\
+${doc.creditor_company_ref         | f_creditor_descr}\
+## - - - - - - - - - -
+## 107-120 - Filler
+${BLANK_CHAR * fldsz(107, 120)}\
+${R_END}
+##
+##
+##
+##
+## -------- Record 30
+<%debug_active and print('\tR_30_START')%>\
+## 1-3 - ' 30'
+${R_30_START}\
+## 4-10 - Numero progressivo: stesso valore omonimo campo del record 14
+${num_progr}\
+## Descrizione debitore (2 segmenti da 30 caratteri)
+##     11-40 + 41-70 - Descrizione del debitore: due segmenti da 30 caratteri accorpati
+##     41-70 - Codifica fiscale: codice fiscale cliente debitore
+${line.debitor_name | f_lint_chars,f_ljust60}\
+${line.debitor_vat_or_fiscode | f_fiscode}\
+## - - - - - - - - - -
+## 87-120 - Filler
+${BLANK_CHAR * fldsz(87, 120)}\
+${R_END}
+##
+##
+##
+##
+## -------- Record 40
+<%debug_active and print('\tR_40_START')%>\
+## 1-3 - ' 40'
+${R_40_START}\
+## 4-10 - Numero progressivo: stesso valore omonimo campo del record 14
+${num_progr}\
+## Indirizzo debitore
+##     11-40 - Indirizzo: via, numero civico e/o nome della frazione
+##     41-45 - CAP
+##     46-70 - Comune e sigla della provincia
+##     71-120 - Banca/sportello domiciliataria: eventuale denominazione in chiaro della banca/sportello domiciliataria/o
+${line.debitor_address | f_lint_chars,f_ljust30}\
+${line.debitor_zip | f_rjust5_0}\
+${line.debitor_city + line.debitor_state.rjust(25 - len(line.debitor_city), ' ')[:fldsz(46, 70)]}\
+${(line.debitor_bank.bank_name or '') | f_ljust50}\
+## - - - - - - - - - -
+${R_END}
+##
+##
+##
+##
+## -------- Record 50
+<%debug_active and print('\tR_50_START')%>\
+## 1-3 - ' 50'
+${R_50_START}\
+## 4-10 - Numero progressivo: stesso valore omonimo campo del record 14
+${num_progr}\
+## Riferimenti al debito (2 segmenti da 40 caratteri)
+##     11-50 + 51-90 - Riferimento al debito
+##     91-100 - Filler
+##     101-116 - Codifica fiscale del creditore
+${riferimento_al_debito(line.invoice_number, line.invoice_date, line.amount)}\
+${BLANK_CHAR * fldsz(91, 100)}\
+${str(doc.creditor_vat_or_fiscode).ljust(fldsz(101, 116), ' ')[:fldsz(101, 116)]}\
+## - - - - - - - - - -
+## 117-120 - Filler
+${BLANK_CHAR * fldsz(117, 120)}\
+${R_END}
+##
+##
+##
+##
+## -------- Record 51
+<%debug_active and print('\tR_51_START')%>\
+## 1-3 - ' 51'
+${R_51_START}\
+## 4-10 - Numero progressivo: stesso valore omonimo campo del record 14
+${num_progr}\
+## 11-20 - Numero ricevuta: numero ricevuta attribuito al cliente
+${str(loop.index + 1).rjust(10, '0')[:10]}\
+## 11-40 - Denominazione creditore
+${doc.creditor_company_name | f_ljust20}\
+## Bollo virtuale -- NON IMPLEMENTATO
+##     41-55 - Provincia: provincia dell'Intendenza di Finanza che ha autorizzato il pagamento del bollo in modo virtuale
+##     56-65 - Numero autorizzazione: numero dell'autorizzazione dall'Intendenza di Finanza
+##     66-71 - Data autorizzazione: data (nel formato GGMMAA) di concessione dell'autorizzazione da parte della Intendenza di Finanza
+${BLANK_CHAR * fldsz(41, 55)}\
+${BLANK_CHAR * fldsz(56, 65)}\
+${BLANK_CHAR * fldsz(66, 71)}\
+## - - - - - - - - - -
+## 72-120 - Filler
+${BLANK_CHAR * fldsz(72, 120)}\
+${R_END}
+##
+##
+##
+##
+## -------- Record 70
+<%debug_active and print('\tR_70_START')%>\
+## 1-3 - ' 70'
+${R_70_START}\
+## 4-10 - Numero progressivo: stesso valore omonimo campo del record 14
+${num_progr}\
+## 11-88 - Filler
+${BLANK_CHAR * fldsz(11, 88)}\
+## 89-100 - Indicatori di circuito - NON IMPLEMENTATO
+${BLANK_CHAR * fldsz(89, 100)}\
+## 101-103 - Indicatore richiesta di incasso - NON IMPLEMENTATO
+${BLANK_CHAR * fldsz(101, 103)}\
+## 104-120 - Chiavi di controllo - NON IMPLEMENTATO
+${BLANK_CHAR * fldsz(104, 120)}\
+${R_END}
+##
+##
+##
+##
+<%debug_active and print()%>\
+% endfor
+<%num_of_records = num_disposizioni * RECORDS_IN_EACH_RIBA + 2%>\
+##
+##
+##
+##
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+## Record EF
+## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+<%debug_active and print('R_EF_START')%>\
+## 1-3 - ' EF'
+${R_EF_START}\
+## 4-8 - UGUALE A CAMPO CORRISPONDENTE NEL RECORD ' IB' -> Mittente: codice SIA dell'azienda mittente
+${doc.sia_code| f_sia}\
+## 9-13 - UGUALE A CAMPO CORRISPONDENTE NEL RECORD ' IB' -> Ricevente: ABI banca assuntrice
+${doc.creditor_bank_account.abi | f_abi}\
+## 14-19 - UGUALE A CAMPO CORRISPONDENTE NEL RECORD ' IB' -> Data creazione: data creazione del flusso da parte dell'azienda (GGMMAA)
+${doc.creation_date.strftime('%d%m%y')}\
+## 20-39 - UGUALE A CAMPO CORRISPONDENTE NEL RECORD ' IB' -> Nome supporto: composizione libera, ma deve essere univoco nell'ambito della data di creazione a parità di mittente e ricevente
+${doc.name| f_docname}\
+## 40-45 - Campo libero: a disposizione del mittente
+${BLANK_CHAR * fldsz(40, 45)}\
+## 46-52 - Numero disposizioni: numero di ricevute Ri.Ba. contenute nel flusso
+${num_progr | f_num_of_disposizioni}\
+## 53-67 - Tot. importi negativi: totale (in centesimi di Euro) delle disposizioni contenute nel flusso
+${doc.total_amount | f_amount_total}\
+## 68-82 - Tot. importi positivi: riempire con zeri
+${'0' * fldsz(68, 82)}\
+## 83-89 - Numero record: numero totale di records che compongono il flusso, nel conteggio sono compresi i record IB ed EF
+${num_of_records | f_num_of_records}\
+## 90-113 - Filler
+${BLANK_CHAR * fldsz(90, 113)}\
+## 114 - Codice divisa: assume valore fisso 'E'
+${'E'}\
+## 115-120 - Campo riservato (riempire con spazi)
+${BLANK_CHAR * fldsz(115, 120)}\
+${R_END}

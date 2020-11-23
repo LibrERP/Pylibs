@@ -1,0 +1,77 @@
+{
+  "creditor_company" : {
+    "partner_id": {
+      "name": "",
+      "ref": "",
+      "vat": "",
+      "fiscalcode": "",
+      "street": "",
+      "city": "",
+      "zip": "",
+      "state": ""
+    },
+    "sia_code": ""
+  },
+  "creditor_bank_account": {
+    "abi": "",
+    "cab": "",
+    "number": ""
+  },
+  "currency_code":"E",
+  "lines": [
+    {
+      "duedate_move_line": {
+        "date_maturity": "",
+        "amount_residual": ""
+      },
+      "invoice": {
+        "number": "",
+        "date_invoice": "",
+      },
+      "debitor_partner": {
+        "name": "",
+        "ref": "",
+        "fiscalcode": "",
+        "vat": "ITXXXXXXXX",
+        "street": "",
+        "city": "",
+        "zip": "",
+        "state_id": {
+          "code": ""
+        }
+      },
+      "debitor_bank": {
+        "bank_name": "",
+        "abi": "",
+        "cab": ""
+      }
+    },
+    {
+      "duedate_move_line": {
+        "date_maturity": "",
+        "amount_residual": ""
+      },
+      "invoice": {
+        "number": "",
+        "date_invoice": "",
+      },
+      "debitor_partner": {
+        "name": "",
+        "ref": "",
+        "fiscalcode": "",
+        "vat": "ITXXXXXXXX",
+        "street": "",
+        "city": "",
+        "zip": "",
+        "state_id": {
+          "code": ""
+        }
+      },
+      "debitor_bank": {
+        "bank_name": "",
+        "abi": "",
+        "cab": ""
+      }
+    }
+  ]
+}

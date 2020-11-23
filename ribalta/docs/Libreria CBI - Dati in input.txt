@@ -1,0 +1,58 @@
+- - - - - - - - - - - - - - - - - - - -
+Generazione RiBa
+- - - - - - - - - - - - - - - - - - - -
+
+
+Intestazione
+- - - - - - - - - - - - - - - - - - - -
+
+    - dati creditore - model 'Company'    ---->    self.env.user.company_id
+        - ragione sociale    ---->    company.name
+        - cod. fiscale / p. IVA    ---->    company.vat / company.fiscalcode
+        - riferimento creditore    ---->    order_obj.config_id.company_id.partner_id.ref or ''
+        - codice SIA    ---->    al momento non ancora disponibile in company, bisogna fare un'estenzione per inserirlo
+        - indirizzo
+            - via + numero civico    ---->    company.street + company.street2
+            - città -> company.city
+            - cap -> company.zip
+            
+    - configurazione RiBa    ---->    model 'Payment Mode' ....per ora può essere passato direttamente il C/C di accredito ('res.partner.bank')
+        - C/C di accredito
+            - abi
+            - cab
+            - numero conto
+            
+    - data creazione (GGMMAA)    ---->    generato automaticamente
+
+    - nome supporto    ---->    datetime.datetime.now().strftime('%d%m%y%H%M%S') + credit_sia
+
+    - codice divisa    ---->    sempre 'E'
+
+
+Righe
+- - - - - - - - - - - - - - - - - - - -
+
+    - Numero ricevuta lunghezza 10 numerico    ---->    Numero della riga all'interno della distinta (si parte da 1 e si segue l'ordine di inserimento)
+    
+    - Dati scadenza    ---->    model 'account.move.line' della scadenza
+        - data scadenza lunghezza 6 numerico (GGMMAA)    ---->    mode_line.date_maturity
+        - importo in centesimi di euro    ---->    int(move_line.amount_residual * 100)
+    
+    - Dati fattura    ---->    model 'account.invoice'
+        - numero fattura lunghezza 40 alfanumerico    ---->    invoice.number
+        - data effettiva della fattura    ---->    invoice.date_invoice
+    
+    - Dati debitore    ---->    model 'res.partner
+        - nome debitore lunghezza 60 alfanumerico    ---->    rp.commercial_company_name OPPURE rp.company_name????
+        - codice cliente attribuito dal creditore lunghezza 16 numerico    ---->    rp.ref or ''
+        - codice fiscale/partita iva debitore lunghezza 1 alfanumerico    ---->    rp.vat / rp.fiscalcode
+        - indirizzo debitore
+            - indirizzo debitore lunghezza 30 alfanumerico    ---->    rp.street + rp.street2
+            - cap debitore lunghezza 5 numerico    ---->    rp.zip
+            - citta debitore alfanumerico    ---->    rp.city
+            - debitor_province debitore alfanumerico    ---->    rp.state_id and rp.state_id.code or ''
+            
+    - Banca del debitore    ---->    'res.partner.bak' ---- Non basta il res.partner perchè ciascun partner può avere più banche
+        - abi banca domiciliataria lunghezza 5 numerico    ---->    rp_bank.abi
+        - cab banca domiciliataria lunghezza 5 numerico    ---->    rp_bank.cab
+        - descrizione banca domiciliataria lunghezza 50 alfanumerico    ---->    rp_bank.bank_name and rp_bank.bank_name[:50] or ''
