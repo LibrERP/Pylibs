@@ -32,5 +32,12 @@ doc = []
 dev = []
 
 [tool.flit.sdist]
-include = ["src/"]
-exclude = ["doc/*.html"]
+include = [
+    "src/"
+]
+exclude = [
+    "doc/",
+    "tests/",
+    "old_setup_py",
+    "Pipfile",
+]
