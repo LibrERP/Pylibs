@@ -2,13 +2,17 @@ from datetime import datetime
 import importlib
 
 from mako.template import Template
-from odoo import _
-from odoo.exceptions import UserError
+
+from .utils.odoo_stuff import UserError, _
+from .utils.validators import validate_abi, validate_cab, validate_bank_account_number, validate_zip, validate_sia
 
 
+# Name of the Mako template file
 CBI_TEMPLATE_FILE = 'cbi.mako'
 
 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class Line:
 
     def __init__(self, duedate_move_line, invoice, debitor_partner, debitor_bank):
@@ -30,11 +34,8 @@ class Line:
         abi = self.debitor_bank.abi
         cab = self.debitor_bank.cab
 
-        if not abi or not cab:
-            raise UserError(
-                _('No IBAN or ABI/CAB specified for ') + self.debitor_name
-            )
-        # end if
+        validate_abi(abi, self.debitor_name)
+        validate_cab(cab, self.debitor_name)
 
         # At least one of VAT or fiscal code required
         if not self.debitor_vat_or_fiscode:
@@ -42,6 +43,9 @@ class Line:
                 _('No VAT or Fiscal Code specified for ') + self.debitor_name
             )
         # end if
+
+        # Validate ZIP code
+        validate_zip(self.debitor_zip)
 
     # end __init__
 
@@ -125,7 +129,6 @@ class Line:
     def invoice_date(self):
         return self._invoice.date_invoice
     # end invoice_date
-
 # end Line
 
 
@@ -148,35 +151,25 @@ class Document:
         # Sanity checks
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-        # Cab and ABI required
+        # CAB and ABI required
         abi = self.creditor_bank_account.abi
         cab = self.creditor_bank_account.cab
 
-        if not abi or not cab:
-            raise UserError(
-                _('No ABI/CAB specified for ')
-                +
-                self.creditor_company_name
-            )
-        # end if
+        validate_abi(abi, self.creditor_company_name)
+        validate_cab(cab, self.creditor_company_name)
 
-        if not self.creditor_bank_account.acc_number:
-            raise UserError(
-                _('No IBAN specified for ') + self.creditor_company_name
-            )
-        # end if
+        validate_bank_account_number(self.creditor_bank_account.acc_number)
 
-        if not self.sia_code:
-            raise UserError(
-                _('No SIA Code specified for ') + self.creditor_company_name
-            )
-        # end if
+        validate_sia(self.sia_code)
 
         if not self.creditor_vat_or_fiscode:
             raise UserError(
                 _('No VAT or Fiscal Code specified for ') + self.creditor_company_name
             )
         # end if
+
+        # Validate ZIP code
+        validate_zip(self.creditor_company_addr_zip)
 
     # end __init__
 

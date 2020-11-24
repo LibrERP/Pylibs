@@ -14,6 +14,7 @@
 ##
 <%
     import re
+    from unidecode import unidecode
 
     # Enable debug messages
     debug_active = False
@@ -44,18 +45,14 @@
     # end fldsz
 
     def riferimento_al_debito(invoice_num, invoice_date, amount):
-        msg = f'PER LA FATTURA N. {invoice_num} DEL {invoice_date.strftime("%d/%m/%Y")} IMP {amount}'.ljust(80, ' ')[:80]
+        msg = unidecode(f'PER LA FATTURA N. {invoice_num} DEL {invoice_date.strftime("%d/%m/%Y")} IMP {amount}')
         msg_formatted = msg.ljust(80, ' ')[:80]
         return msg_formatted
     # end riferimento_al_debito
 
-    def f_rjust5_0(content):
-        return str(content).strip().rjust(5, '0')[:5]
-    # end f_rjust5_0
-
-    f_cab = f_rjust5_0
-    f_abi = f_rjust5_0
-    f_sia = f_rjust5_0
+    def f_unidecode(content):
+        return unidecode(content)
+    # end f_unidecode
 
     def f_acct_num(account_number):
         return str(account_number).strip().ljust(12, '0')[:12]
@@ -71,41 +68,27 @@
 
     f_num_of_disposizioni = f_num_of_records
 
-
-    def f_ljust_and_trim(content, width, fill_char):
-        return str(content).strip().ljust(width, fill_char)[:width]
+    def f_rjust_and_trim(content, width, fill_char):
+        return unidecode(str(content)).strip().rjust(width, fill_char)[:width]
     # end ljust_and_trim
 
-    def f_ljust20(content):
-        """Left justify, pad with spaces to the left till 20 chars,
-        take the first 20 chars"""
-        return f_ljust_and_trim(content, 20, ' ')
-    # end f_ljust20
+    f_zip_code = lambda content: f_rjust_and_trim(content, 5, '0')
+    f_number_of_receipts = lambda content: f_rjust_and_trim(content, 10, '0')
+    f_cab = lambda content: f_rjust_and_trim(content, 5, '0')
+    f_abi = lambda content: f_rjust_and_trim(content, 5, '0')
+    f_sia = lambda content: f_rjust_and_trim(content, 5, '!')
 
-    def f_ljust24(content):
-        """Left justify, pad with spaces to the left till 24 chars,
-        take the first 24 chars"""
-        return f_ljust_and_trim(content, 24, ' ')
-    # end f_ljust24
+    def f_ljust_and_trim(content, width, fill_char):
+        return unidecode(str(content)).strip().ljust(width, fill_char)[:width]
+    # end ljust_and_trim
 
-    def f_ljust30(content):
-        """Left justify, pad with spaces to the left till 30 chars,
-        take the first 30 chars"""
-        return f_ljust_and_trim(content, 30, ' ')
-    # end f_ljust30
-
-    def f_ljust50(content):
-        """Left justify, pad with spaces to the left till 50 chars,
-        take the first 50 chars"""
-        return f_ljust_and_trim(content, 50, ' ')
-    # end f_ljust50
-
-    def f_ljust60(content):
-        """Left justify, pad with spaces to the left till 60 chars,
-        take the first 60 chars"""
-        return f_ljust_and_trim(content, 60, ' ')
-    # end f_ljust60
-
+    f_ljust16 = lambda content: f_ljust_and_trim(content, 16, ' ')
+    f_ljust20 = lambda content: f_ljust_and_trim(content, 20, ' ')
+    f_ljust24 = lambda content: f_ljust_and_trim(content, 24, ' ')
+    f_ljust25 = lambda content: f_ljust_and_trim(content, 25, ' ')
+    f_ljust30 = lambda content: f_ljust_and_trim(content, 30, ' ')
+    f_ljust50 = lambda content: f_ljust_and_trim(content, 50, ' ')
+    f_ljust60 = lambda content: f_ljust_and_trim(content, 60, ' ')
     f_creditor_descr = f_ljust24
 
     def f_amount_line(amount):
@@ -126,15 +109,13 @@
         return docname.ljust(20, ' ')
     # end f_doc_name
 
-    def f_lint_chars(content):
-        return re.sub(r'[^\w\s,.]+', '', content)
-    # end f_lint_chars
-
 %>\
 ##
 ##
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## Record IB
+## ............................................................................
+##                                Record IB
+## ............................................................................
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 <%debug_active and print('R_IB_START')%>\
 ## 1-3 - ' IB'
@@ -172,21 +153,24 @@ ${R_END}
 <%debug_active and print()%>\
 % for line in lines:
 <%
-    num_progr = loop_num_to_num_progr(loop.index)  # Numero progressivo della ricevuta (parte da '1')
+    # Numero progressivo della ricevuta (parte da '1')
+    num_progr = loop_num_to_num_progr(loop.index)
     num_disposizioni = loop.index + 1
 %>\
 ##
 ##
 ##
 ##
-## -------- Record 14
+## ............................................................................
+## .................... Record 14 .............................................
+## ............................................................................
 <%debug_active and print('\tR_14_START')%>\
 ## 1-3 - ' 14'
 ${R_14_START}\
 ## 4-10 - Numero progressivo: numero della disposizione all'interno del flusso
 ${num_progr}\
 ## 11-22 - Filler
-${' ' * fldsz(11, 22)}\
+${BLANK_CHAR * fldsz(11, 22)}\
 ## 21-28 - Data pagamento: data di scadenza (GGMMAA)
 ${line.duedate.strftime('%d%m%y')}\
 ## 29-33 - Causale: assume valore fisso '30000'
@@ -199,8 +183,8 @@ ${line.amount | f_amount_line}\
 ##     48-52 - ABI assuntrice
 ##     53-57 - CAB assuntrice
 ##     58-69 - Numero di conto
-${doc.creditor_bank_account.abi    | f_abi}\
-${doc.creditor_bank_account.cab    | f_cab}\
+${doc.creditor_bank_account.abi | f_abi}\
+${doc.creditor_bank_account.cab | f_cab}\
 ${doc.creditor_bank_account.acc_number | f_acct_num}\
 ## - - - - - - - - - -
 ## Coordinate banca domiciliataria
@@ -218,7 +202,7 @@ ${BLANK_CHAR * fldsz(80, 91)}\
 ##     114 - Flag tipo debitore: nel caso il debitore sia una banca va valorizzato con 'B', altrimenti va lasciato in bianco
 ${doc.sia_code | f_sia}\
 4\
-${str(line.debitor_client_code).strip().ljust(fldsz(98, 113), ' ')[:fldsz(98, 113)]}\
+${line.debitor_client_code | f_unidecode,f_ljust16}\
 ${BLANK_CHAR}\
 ## - - - - - - - - - -
 ## 115-119 - Filler
@@ -230,7 +214,9 @@ ${R_END}
 ##
 ##
 ##
-## -------- Record 20
+## ............................................................................
+## .................... Record 20 .............................................
+## ............................................................................
 <%debug_active and print('\tR_20_START')%>\
 ## 1-3 - ' 20'
 ${R_20_START}\
@@ -253,7 +239,9 @@ ${R_END}
 ##
 ##
 ##
-## -------- Record 30
+## ............................................................................
+## .................... Record 30 .............................................
+## ............................................................................
 <%debug_active and print('\tR_30_START')%>\
 ## 1-3 - ' 30'
 ${R_30_START}\
@@ -262,7 +250,7 @@ ${num_progr}\
 ## Descrizione debitore (2 segmenti da 30 caratteri)
 ##     11-40 + 41-70 - Descrizione del debitore: due segmenti da 30 caratteri accorpati
 ##     41-70 - Codifica fiscale: codice fiscale cliente debitore
-${line.debitor_name | f_lint_chars,f_ljust60}\
+${line.debitor_name | f_ljust60}\
 ${line.debitor_vat_or_fiscode | f_fiscode}\
 ## - - - - - - - - - -
 ## 87-120 - Filler
@@ -272,7 +260,9 @@ ${R_END}
 ##
 ##
 ##
-## -------- Record 40
+## ............................................................................
+## .................... Record 40 .............................................
+## ............................................................................
 <%debug_active and print('\tR_40_START')%>\
 ## 1-3 - ' 40'
 ${R_40_START}\
@@ -283,9 +273,9 @@ ${num_progr}\
 ##     41-45 - CAP
 ##     46-70 - Comune e sigla della provincia
 ##     71-120 - Banca/sportello domiciliataria: eventuale denominazione in chiaro della banca/sportello domiciliataria/o
-${line.debitor_address | f_lint_chars,f_ljust30}\
-${line.debitor_zip | f_rjust5_0}\
-${line.debitor_city + line.debitor_state.rjust(25 - len(line.debitor_city), ' ')[:fldsz(46, 70)]}\
+${line.debitor_address | f_unidecode,f_ljust30}\
+${line.debitor_zip | f_zip_code}\
+${f'{line.debitor_city} {line.debitor_state}' | f_ljust25}\
 ${(line.debitor_bank.bank_name or '') | f_ljust50}\
 ## - - - - - - - - - -
 ${R_END}
@@ -293,7 +283,9 @@ ${R_END}
 ##
 ##
 ##
-## -------- Record 50
+## ............................................................................
+## .................... Record 50 .............................................
+## ............................................................................
 <%debug_active and print('\tR_50_START')%>\
 ## 1-3 - ' 50'
 ${R_50_START}\
@@ -305,7 +297,7 @@ ${num_progr}\
 ##     101-116 - Codifica fiscale del creditore
 ${riferimento_al_debito(line.invoice_number, line.invoice_date, line.amount)}\
 ${BLANK_CHAR * fldsz(91, 100)}\
-${str(doc.creditor_vat_or_fiscode).ljust(fldsz(101, 116), ' ')[:fldsz(101, 116)]}\
+${doc.creditor_vat_or_fiscode | f_ljust16}\
 ## - - - - - - - - - -
 ## 117-120 - Filler
 ${BLANK_CHAR * fldsz(117, 120)}\
@@ -314,14 +306,16 @@ ${R_END}
 ##
 ##
 ##
-## -------- Record 51
+## ............................................................................
+## .................... Record 51 .............................................
+## ............................................................................
 <%debug_active and print('\tR_51_START')%>\
 ## 1-3 - ' 51'
 ${R_51_START}\
 ## 4-10 - Numero progressivo: stesso valore omonimo campo del record 14
 ${num_progr}\
 ## 11-20 - Numero ricevuta: numero ricevuta attribuito al cliente
-${str(loop.index + 1).rjust(10, '0')[:10]}\
+${(loop.index + 1) | f_number_of_receipts}\
 ## 11-40 - Denominazione creditore
 ${doc.creditor_company_name | f_ljust20}\
 ## Bollo virtuale -- NON IMPLEMENTATO
@@ -339,7 +333,9 @@ ${R_END}
 ##
 ##
 ##
-## -------- Record 70
+## ............................................................................
+## .................... Record 70 .............................................
+## ............................................................................
 <%debug_active and print('\tR_70_START')%>\
 ## 1-3 - ' 70'
 ${R_70_START}\
@@ -366,7 +362,9 @@ ${R_END}
 ##
 ##
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-## Record EF
+## ............................................................................
+##                               Record EF
+## ............................................................................
 ## - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 <%debug_active and print('R_EF_START')%>\
 ## 1-3 - ' EF'

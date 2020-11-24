@@ -6,10 +6,10 @@ build-backend="flit_core.buildapi"
 module="ribalta"
 author="Marco Tosato"
 author-email="marco.tosato@didotech.com"
-home-page='https://github.com/LibrERP/Pylibs/ribalta/'
+home-page='https://github.com/LibrERP/Pylibs/'
 requires=[
     "mako >=1.1.3",
-    "configparser",
+    "unidecode",
 ]
 requires-python=">= 3.6"
 description-file="README.md"
@@ -40,4 +40,9 @@ exclude = [
     "tests/",
     "old_setup_py",
     "Pipfile",
+]
+
+[pytest]
+testpaths = [
+    "tests"
 ]

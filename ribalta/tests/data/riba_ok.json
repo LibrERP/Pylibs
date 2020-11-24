@@ -10,7 +10,7 @@
       "zip": "35121",
       "state_id": {"code": "PD"}
     },
-    "sia_code": "FBI8"
+    "sia_code": "F8007"
   },
 
   "creditor_bank_account": {
@@ -29,7 +29,7 @@
         "ref": "",
         "fiscalcode": "",
         "vat": "IT04483400281",
-        "street": "Via Morgagni 30/A ",
+        "street": "Via Morgagni 30A ",
         "city": "Padova",
         "zip": "35121",
         "state_id": {"code": "PD"}
@@ -55,7 +55,7 @@
         "ref": "",
         "fiscalcode": "",
         "vat": "IT04483400281",
-        "street": "Via Morgagni 30/A ",
+        "street": "Via Morgagni 30A ",
         "city": "Padova",
         "zip": "35121",
         "state_id": {"code": "PD"}
@@ -81,7 +81,7 @@
         "ref": "",
         "fiscalcode": "",
         "vat": "IT04483400281",
-        "street": "Via Morgagni 30/A ",
+        "street": "Via Morgagni 30A ",
         "city": "Padova",
         "zip": "35121",
         "state_id": {"code": "PD"}
