@@ -17,7 +17,7 @@
     "cab": "",
     "number": ""
   },
-  "currency_code":"E",
+  
   "lines": [
     {
       "duedate_move_line": {
@@ -26,9 +26,9 @@
       },
       "invoice": {
         "number": "",
-        "date_invoice": "",
+        "date_invoice": ""
       },
-      "debitor_partner": {
+      "debtor_partner": {
         "name": "",
         "ref": "",
         "fiscalcode": "",
@@ -40,7 +40,7 @@
           "code": ""
         }
       },
-      "debitor_bank": {
+      "debtor_bank": {
         "bank_name": "",
         "abi": "",
         "cab": ""
@@ -53,9 +53,9 @@
       },
       "invoice": {
         "number": "",
-        "date_invoice": "",
+        "date_invoice": ""
       },
-      "debitor_partner": {
+      "debtor_partner": {
         "name": "",
         "ref": "",
         "fiscalcode": "",
@@ -67,7 +67,7 @@
           "code": ""
         }
       },
-      "debitor_bank": {
+      "debtor_bank": {
         "bank_name": "",
         "abi": "",
         "cab": ""

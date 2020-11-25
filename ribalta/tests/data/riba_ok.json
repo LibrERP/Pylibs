@@ -19,12 +19,10 @@
     "number": "222244446666"
   },
 
-  "currency_code": "E",
-
   "lines": [
 
     {
-      "debitor_partner": {
+      "debtor_partner": {
         "name": "Kissa Komics S.R.L.",
         "ref": "",
         "fiscalcode": "",
@@ -34,7 +32,7 @@
         "zip": "35121",
         "state_id": {"code": "PD"}
       },
-      "debitor_bank": {
+      "debtor_bank": {
         "bank_name": "Banca Etica",
         "abi": "05018",
         "cab": "12101"
@@ -50,7 +48,7 @@
     },
 
     {
-      "debitor_partner": {
+      "debtor_partner": {
         "name": "Kissa Komics S.R.L.",
         "ref": "",
         "fiscalcode": "",
@@ -60,7 +58,7 @@
         "zip": "35121",
         "state_id": {"code": "PD"}
       },
-      "debitor_bank": {
+      "debtor_bank": {
         "bank_name": "Banca Etica",
         "abi": "05018",
         "cab": "12101"
@@ -76,7 +74,7 @@
     },
 
     {
-      "debitor_partner": {
+      "debtor_partner": {
         "name": "Kissa Komics S.R.L.",
         "ref": "",
         "fiscalcode": "",
@@ -86,7 +84,7 @@
         "zip": "35121",
         "state_id": {"code": "PD"}
       },
-      "debitor_bank": {
+      "debtor_bank": {
         "bank_name": "Banca Etica",
         "abi": "05018",
         "cab": "12101"

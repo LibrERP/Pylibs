@@ -1,16 +1,13 @@
-from .data_load import FakeData
-from .validators import CBIReferenceValidator
+from .tools.data_load import FakeData
+from .tools.validators import CBIReferenceModelValidator, CBIFormatValidator
 
-from ribalta.cbi import Document, Line
+from ribalta.riba import Document, Receipt
 
 
-def test_riba_ok():
+def test_riba_with_model():
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Test environment setup
-
-    # Build the validation object
-    validator = CBIReferenceValidator.build_from_reference_model('riba_ok')
 
     # Read data from json
     test_data = FakeData.build_from_test_data('riba_ok')
@@ -20,18 +17,25 @@ def test_riba_ok():
 
     # Build the CBI document object: use the test data
     # to perform the same steps of the real building process
-    cbi_doc = Document(**test_data.head)
+    riba_doc = Document(**test_data.head)
     for line in test_data.lines:
-        cbi_doc.add_line(Line(**line))
+        riba_doc.add_receipt(Receipt(**line))
     # end for
 
-    # Render the cbi_doc as string
-    cbi_doc = cbi_doc.render_cbi()
+    # Render the riba_doc as string
+    riba_doc = riba_doc.render_cbi()
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Validate the result against the reference document
 
+    # Build the validation objects
+    format_validator = CBIFormatValidator(riba_doc)
+    model_validator = CBIReferenceModelValidator.build_from_reference_model('riba_ok')
+    
+    # Check document format correctness
+    format_validator.validate()
+
     # Perform the validation against the reference model
-    validator.validate_data(cbi_doc)
+    model_validator.validate_data(riba_doc)
 
 # end test_riba_ok

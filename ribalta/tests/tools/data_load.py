@@ -5,7 +5,7 @@ import json
 from .fakes import BankFake, BankAccountFake, InvoiceFake, MoveLineFake, PartnerFake, CompanyFake
 
 
-TEST_DATA_PACKAGE = __package__ + '.data'
+TEST_DATA_PACKAGE = 'tests.data'
 
 
 def load_data_as_text(filename: str):
@@ -23,16 +23,15 @@ def load_data_as_bytes(filename: str):
 
 
 class FakeData:
-    def __init__(self, creditor_company, creditor_bank_account, currency_code, lines):
+    def __init__(self, creditor_company, creditor_bank_account, lines):
         self.head = {
             'creditor_company': CompanyFake(**creditor_company),
             'creditor_bank_account': BankAccountFake(**creditor_bank_account),
-            'currency_code': currency_code,
         }
         self.lines = [
             {
-                'debitor_partner': PartnerFake(**line['debitor_partner']),
-                'debitor_bank': BankFake(**line['debitor_bank']),
+                'debtor_partner': PartnerFake(**line['debtor_partner']),
+                'debtor_bank': BankFake(**line['debtor_bank']),
                 'invoice': InvoiceFake(**line['invoice']),
                 'duedate_move_line': MoveLineFake(**line['duedate_move_line']),
             }

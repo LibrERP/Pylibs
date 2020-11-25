@@ -3,14 +3,14 @@
     "partner_id": {
       "name": "My Company",
       "ref": "",
-      "vat": "",
-      "fiscalcode": "",
+      "vat": "IT04218940155",
+      "fiscalcode": "04218940155",
       "street": "via Altinate, 108",
       "city": "Padova",
       "zip": "35121",
       "state_id": {"code": "PD"}
     },
-    "sia_code": "F8007"
+    "sia_code": "FBI8"
   },
 
   "creditor_bank_account": {

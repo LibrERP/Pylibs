@@ -7,7 +7,7 @@
 ## descritto nel documento:
 ##    Nome: CBI-ICI-001
 ##    Versione: v. 6.01 - Pagine 21
-##    Ultimo aggiornamento 16-15-2006
+##    Ultimo aggiornamento 15-12-2006
 ##    Autore: Segreteria Tecnica
 ##    Revisore: D.ssa Liliana Fratini Passi
 ##
@@ -190,8 +190,8 @@ ${doc.creditor_bank_account.acc_number | f_acct_num}\
 ## Coordinate banca domiciliataria
 ##     70-74 - ABI domiciliataria
 ##     75-79 - CAB domiciliataria
-${line.debitor_bank.abi | f_abi}\
-${line.debitor_bank.cab | f_cab}\
+${line.debtor_bank.abi | f_abi}\
+${line.debtor_bank.cab | f_cab}\
 ## - - - - - - - - - -
 ## 80-91 - Filler
 ${BLANK_CHAR * fldsz(80, 91)}\
@@ -202,7 +202,7 @@ ${BLANK_CHAR * fldsz(80, 91)}\
 ##     114 - Flag tipo debitore: nel caso il debitore sia una banca va valorizzato con 'B', altrimenti va lasciato in bianco
 ${doc.sia_code | f_sia}\
 4\
-${line.debitor_client_code | f_unidecode,f_ljust16}\
+${line.debtor_client_code | f_unidecode,f_ljust16}\
 ${BLANK_CHAR}\
 ## - - - - - - - - - -
 ## 115-119 - Filler
@@ -250,8 +250,8 @@ ${num_progr}\
 ## Descrizione debitore (2 segmenti da 30 caratteri)
 ##     11-40 + 41-70 - Descrizione del debitore: due segmenti da 30 caratteri accorpati
 ##     41-70 - Codifica fiscale: codice fiscale cliente debitore
-${line.debitor_name | f_ljust60}\
-${line.debitor_vat_or_fiscode | f_fiscode}\
+${line.debtor_name | f_ljust60}\
+${line.debtor_vat_or_fiscode | f_fiscode}\
 ## - - - - - - - - - -
 ## 87-120 - Filler
 ${BLANK_CHAR * fldsz(87, 120)}\
@@ -273,10 +273,10 @@ ${num_progr}\
 ##     41-45 - CAP
 ##     46-70 - Comune e sigla della provincia
 ##     71-120 - Banca/sportello domiciliataria: eventuale denominazione in chiaro della banca/sportello domiciliataria/o
-${line.debitor_address | f_unidecode,f_ljust30}\
-${line.debitor_zip | f_zip_code}\
-${f'{line.debitor_city} {line.debitor_state}' | f_ljust25}\
-${(line.debitor_bank.bank_name or '') | f_ljust50}\
+${line.debtor_address | f_unidecode,f_ljust30}\
+${line.debtor_zip | f_zip_code}\
+${f'{line.debtor_city} {line.debtor_state}' | f_ljust25}\
+${(line.debtor_bank.bank_name or '') | f_ljust50}\
 ## - - - - - - - - - -
 ${R_END}
 ##

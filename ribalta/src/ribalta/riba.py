@@ -1,10 +1,17 @@
 from datetime import datetime
-import importlib
+import importlib.resources
 
 from mako.template import Template
 
+from .utils.errors import FiscalcodeMissingError
 from .utils.odoo_stuff import UserError, _
-from .utils.validators import validate_abi, validate_cab, validate_bank_account_number, validate_zip, validate_sia
+from .utils.validators import (
+    validate_abi,
+    validate_cab,
+    validate_bank_account_number,
+    validate_zip,
+    validate_sia
+)
 
 
 # Name of the Mako template file
@@ -13,9 +20,9 @@ CBI_TEMPLATE_FILE = 'cbi.mako'
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-class Line:
+class Receipt:
 
-    def __init__(self, duedate_move_line, invoice, debitor_partner, debitor_bank):
+    def __init__(self, duedate_move_line, invoice, debtor_partner, debtor_bank):
 
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         # Fields initialization
@@ -23,29 +30,29 @@ class Line:
 
         self._duedate_move_line = duedate_move_line
         self._invoice = invoice
-        self._debitor_partner = debitor_partner
-        self._debitor_bank = debitor_bank
+        self._debtor_partner = debtor_partner
+        self._debtor_bank = debtor_bank
 
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         # Sanity checks
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
         # Cab and ABI required
-        abi = self.debitor_bank.abi
-        cab = self.debitor_bank.cab
+        abi = self.debtor_bank.abi
+        cab = self.debtor_bank.cab
 
-        validate_abi(abi, self.debitor_name)
-        validate_cab(cab, self.debitor_name)
+        validate_abi(abi, self.debtor_name)
+        validate_cab(cab, self.debtor_name)
 
         # At least one of VAT or fiscal code required
-        if not self.debitor_vat_or_fiscode:
-            raise UserError(
-                _('No VAT or Fiscal Code specified for ') + self.debitor_name
+        if not self.debtor_vat_or_fiscode:
+            raise FiscalcodeMissingError(
+                _('No VAT or Fiscal Code specified for ') + self.debtor_name
             )
         # end if
 
         # Validate ZIP code
-        validate_zip(self.debitor_zip)
+        validate_zip(self.debtor_zip)
 
     # end __init__
 
@@ -60,65 +67,65 @@ class Line:
     # end amount
 
     @property
-    def debitor_name(self):
-        return self._debitor_partner.name
-    # end debitor_name
+    def debtor_name(self):
+        return self._debtor_partner.name
+    # end debtor_name
 
     @property
-    def debitor_client_code(self):
-        return self._debitor_partner.ref or ''
-    # end debitor_client_code
+    def debtor_client_code(self):
+        return self._debtor_partner.ref or ''
+    # end debtor_client_code
 
     @property
-    def debitor_fiscalcode(self):
-        return self._debitor_partner.fiscalcode
-    # end debitor_fiscalcode
+    def debtor_fiscalcode(self):
+        return self._debtor_partner.fiscalcode
+    # end debtor_fiscalcode
 
     @property
-    def debitor_vat_number(self):
+    def debtor_vat_number(self):
         # Since CBI are used only in Italy remove the leading IT from VAT code
-        if not self._debitor_partner.vat:
+        if not self._debtor_partner.vat:
             return False
-        elif self._debitor_partner.vat.lower().startswith('it'):
-            return self._debitor_partner.vat[2:]
+        elif self._debtor_partner.vat.lower().startswith('it'):
+            return self._debtor_partner.vat[2:]
         else:
-            return self._debitor_partner.vat
+            return self._debtor_partner.vat
         # end if
-    # end debitor_vat_number
+    # end debtor_vat_number
 
     @property
-    def debitor_vat_or_fiscode(self):
-        return self.debitor_vat_number or self.debitor_fiscalcode
-    # end debitor_vat_or_fiscode
+    def debtor_vat_or_fiscode(self):
+        return self.debtor_vat_number or self.debtor_fiscalcode
+    # end debtor_vat_or_fiscode
 
     @property
-    def debitor_address(self):
-        return self._debitor_partner.street
-    # end debitor_address
+    def debtor_address(self):
+        return self._debtor_partner.street
+    # end debtor_address
 
     @property
-    def debitor_city(self):
-        return self._debitor_partner.city
-    # end debitor_city
+    def debtor_city(self):
+        return self._debtor_partner.city
+    # end debtor_city
 
     @property
-    def debitor_state(self):
-        if self._debitor_partner.state_id:
-            return str(self._debitor_partner.state_id.code)
+    def debtor_state(self):
+        if self._debtor_partner.state_id:
+            return str(self._debtor_partner.state_id.code)
         else:
             return ''
         # end if
-    # end debitor_state
+    # end debtor_state
 
     @property
-    def debitor_zip(self):
-        return self._debitor_partner.zip
-    # end debitor_zip
+    def debtor_zip(self):
+        return self._debtor_partner.zip
+    # end debtor_zip
 
     @property
-    def debitor_bank(self):
-        return self._debitor_bank
-    # end debitor_bank_descr
+    def debtor_bank(self):
+        return self._debtor_bank
+    # end debtor_bank
 
     @property
     def invoice_number(self):
@@ -129,12 +136,44 @@ class Line:
     def invoice_date(self):
         return self._invoice.date_invoice
     # end invoice_date
-# end Line
+# end Receipt
 
 
 class Document:
+    """
+    Class that represents a RiBa document with header record, trailing record
+    and records for RiBa receipts.
+    
+    Attributes:
+        creditor_company (res.company): Creditor's company object.
+        creditor_company_name (str): Creditor's company name as string.
+        creditor_fiscalcode (str): Creditor's company fiscal if set.
+        creditor_vat_number (str): Creditor's company VAT number if set.
+        creditor_vat_or_fiscode (str): Creditor's VAT number or the
+                                       fiscalcode it the former is missing.
+        creditor_company_ref (str): Creditor's company internal reference if set or ''
+        creditor_company_addr_street (str)
+        creditor_company_addr_zip (str)
+        creditor_company_addr_city (str)
+        creditor_company_addr_zip_and_city (str)
+        creditor_bank_account (res.bank.account): Creditor's bank account
+                                                  object.
+        creation_date (datetime.datetime): Document creation timestamp.
+        sia_code (str): Creditor's SIA code.
+        name (str): Document name (aka nome supporto) obtained concatenating
+                    the creation timestamp with the SIA code
+        total_amount (float): Sum of the amount of the receipts added to
+                              this document
+    """
 
-    def __init__(self, creditor_company, creditor_bank_account, currency_code='E'):
+    def __init__(self, creditor_company, creditor_bank_account):
+        """
+        Constructior for Document.
+        
+        Parameters:
+            creditor_company (res.company): Odoo object representing the credotor's company
+            creditor_bank_account (res.bank.
+        """
 
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         # Fields initialization
@@ -143,7 +182,6 @@ class Document:
         self._creditor_company = creditor_company
         self._creditor_bank_account = creditor_bank_account
         self._creation_date = datetime.now()
-        self._currency_code = currency_code
 
         self._lines = list()
 
@@ -163,14 +201,13 @@ class Document:
         validate_sia(self.sia_code)
 
         if not self.creditor_vat_or_fiscode:
-            raise UserError(
+            raise FiscalcodeMissingError(
                 _('No VAT or Fiscal Code specified for ') + self.creditor_company_name
             )
         # end if
 
         # Validate ZIP code
         validate_zip(self.creditor_company_addr_zip)
-
     # end __init__
 
     @property
@@ -245,11 +282,6 @@ class Document:
     # end creation_date
 
     @property
-    def currency_code(self):
-        return self._currency_code
-    # end currency_code
-
-    @property
     def sia_code(self):
         return str(self._creditor_company.sia_code).strip()
     # end sia_code
@@ -269,7 +301,7 @@ class Document:
         return total_amount
     # end total_amount
 
-    def add_line(self, line: Line):
+    def add_receipt(self, line: Receipt):
         self._lines.append(line)
     # end add_line
 
@@ -280,5 +312,4 @@ class Document:
         cbi_document = cbi_template.render(doc=self, lines=self._lines)
         return cbi_document
     # end render
-
 # end Document
