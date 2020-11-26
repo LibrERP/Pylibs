@@ -12,7 +12,7 @@ requires=[
     "unidecode",
 ]
 requires-python=">= 3.6"
-description-file="README.md"
+description-file="README.rst"
 classifiers=[
     'Programming Language :: Python :: 3',
     'Operating System :: OS Independent',

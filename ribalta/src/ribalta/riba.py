@@ -21,6 +21,18 @@ CBI_TEMPLATE_FILE = 'cbi.mako'
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class Receipt:
+    """
+    Class that represents a single RiBa receipt to bhe added to a RiBa document.
+    
+    :param duedate_move_line: Odoo object representing the amount to be payed and it's maturity date
+    :type duedate_move_line: class:`account.move.line`
+    :param invoice: Odoo object representing the invoice of which this receipt is part
+    :type invoice: class:`account.invoice`
+    :param debtor_partner: Odoo object holding the name and address of the debtor
+    :type debtor_partner: class:`res.partner`
+    :param debtor_bank: Odoo object holding the name and address of the debtor's bank
+    :type debtor_bank: class:`res.bank`
+    """
 
     def __init__(self, duedate_move_line, invoice, debtor_partner, debtor_bank):
 
@@ -144,36 +156,14 @@ class Document:
     Class that represents a RiBa document with header record, trailing record
     and records for RiBa receipts.
     
-    Attributes:
-        creditor_company (res.company): Creditor's company object.
-        creditor_company_name (str): Creditor's company name as string.
-        creditor_fiscalcode (str): Creditor's company fiscal if set.
-        creditor_vat_number (str): Creditor's company VAT number if set.
-        creditor_vat_or_fiscode (str): Creditor's VAT number or the
-                                       fiscalcode it the former is missing.
-        creditor_company_ref (str): Creditor's company internal reference if set or ''
-        creditor_company_addr_street (str)
-        creditor_company_addr_zip (str)
-        creditor_company_addr_city (str)
-        creditor_company_addr_zip_and_city (str)
-        creditor_bank_account (res.bank.account): Creditor's bank account
-                                                  object.
-        creation_date (datetime.datetime): Document creation timestamp.
-        sia_code (str): Creditor's SIA code.
-        name (str): Document name (aka nome supporto) obtained concatenating
-                    the creation timestamp with the SIA code
-        total_amount (float): Sum of the amount of the receipts added to
-                              this document
+    :param creditor_company: Odoo object representing the creditor's company
+    :type creditor_company: class:`res.company`
+    :param creditor_bank_account:
+    :type creditor_company: class:`res.partner.bank`
     """
 
     def __init__(self, creditor_company, creditor_bank_account):
-        """
-        Constructior for Document.
-        
-        Parameters:
-            creditor_company (res.company): Odoo object representing the credotor's company
-            creditor_bank_account (res.bank.
-        """
+        """Constructor method"""
 
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         # Fields initialization
@@ -183,7 +173,7 @@ class Document:
         self._creditor_bank_account = creditor_bank_account
         self._creation_date = datetime.now()
 
-        self._lines = list()
+        self._receipts = list()
 
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         # Sanity checks
@@ -296,20 +286,29 @@ class Document:
         # Since this function will probably be called just one time the
         # computation can be done on the fly without any negative
         # performance impact
-        lines_amounts = map(lambda line: line.amount, self._lines)
-        total_amount = sum(lines_amounts)
+        receipts_amounts = map(lambda line: line.amount, self._receipts)
+        total_amount = sum(receipts_amounts)
         return total_amount
     # end total_amount
 
-    def add_receipt(self, line: Receipt):
-        self._lines.append(line)
+    def add_receipt(self, rcpt: Receipt):
+        """
+        Add a receipt to the RiBa document
+        :return: nothing
+        """
+        self._receipts.append(rcpt)
     # end add_line
 
     def render_cbi(self):
+        """
+        Render the RiBa document in the CBI format
+        :return: the CBI document representing the RiBa document
+        :rtype: str
+        """
         cbi_template = Template(
             text=importlib.resources.read_text(__package__ + '.templates', CBI_TEMPLATE_FILE)
         )
-        cbi_document = cbi_template.render(doc=self, lines=self._lines)
+        cbi_document = cbi_template.render(doc=self, lines=self._receipts)
         return cbi_document
     # end render
 # end Document

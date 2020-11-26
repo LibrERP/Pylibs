@@ -127,3 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# # # # # # # # # # #
+# ribalta library
+# # # # # # # # # # #
+
+ribalta/dist
+ribalta/.ipynb_checkpoints
