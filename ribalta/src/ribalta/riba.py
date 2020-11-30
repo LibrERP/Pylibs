@@ -1,10 +1,12 @@
+import itertools
 from datetime import datetime
 import importlib.resources
 
+import typing
 from mako.template import Template
 
 from .utils.errors import FiscalcodeMissingError
-from .utils.odoo_stuff import UserError, _
+from .utils.odoo_stuff import _
 from .utils.validators import (
     validate_abi,
     validate_cab,
@@ -22,7 +24,7 @@ CBI_TEMPLATE_FILE = 'cbi.mako'
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class Receipt:
     """
-    Class that represents a single RiBa receipt to bhe added to a RiBa document.
+    Class that represents a single RiBa receipt to be added to a RiBa document.
     
     :param duedate_move_line: Odoo object representing the amount to be payed and it's maturity date
     :type duedate_move_line: class:`account.move.line`
@@ -77,6 +79,11 @@ class Receipt:
     def amount(self):
         return self._duedate_move_line.amount_residual
     # end amount
+
+    @property
+    def debtor_partner(self):
+        return self._debtor_partner
+    # end duedate
 
     @property
     def debtor_name(self):
@@ -148,7 +155,148 @@ class Receipt:
     def invoice_date(self):
         return self._invoice.date_invoice
     # end invoice_date
+    
+    def __str__(self):
+        name = self.debtor_name[:25].ljust(25, ' ')
+        vat = self.debtor_vat_or_fiscode
+        inv_num = self.invoice_number
+        inv_date = self.invoice_date
+        due_date = self.duedate
+        amount = self.amount
+        return f'{name} ({vat}) - ' \
+               f'{inv_num} del {inv_date:%Y-%m-%d} - ' \
+               f'scad: {due_date:%Y-%m-%d} € {amount}'
+    # end __str__
+    
+    def __repr__(self):
+        return self.__str__()
+    # end __repr__
 # end Receipt
+
+
+class _ReceiptGroup:
+    """
+    Class that represents a group of RiBa receipt to be rendered as a single line in the RiBa document.
+    
+    :param receipts: the list of class:`Receipt` objects to bo grouped together
+    :type receipts: List of class:`Receipt`
+    """
+
+    def __init__(self, receipts: typing.List[Receipt]):
+        
+        if not receipts:
+            raise ValueError(
+                'There must be at least one Receipt object in the group'
+            )
+        # end if
+
+        # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        # Fields initialization
+        # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        # List of receipts
+        self._receipts = receipts
+        
+        # Reference object to get data common to all receipts in the group
+        self._r_ref = self._receipts[0]
+        
+        # Description of the group listing the numbers of the invoices
+        # referred by the grouped lines
+        self._desc = ', '.join(
+            map(lambda r: f'{r.invoice_number} ({r.invoice_date:%Y-%m-%d})', self._receipts)
+        )
+        self._amount = sum(
+            map(lambda r: r.amount, self._receipts)
+        )
+
+        # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        # Sanity checks
+        # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+        
+        # Same debtor partner
+        
+        # Same debtor bank
+    # end __init__
+
+    @property
+    def duedate(self):
+        return self._r_ref.duedate
+    # end duedate
+
+    @property
+    def amount(self):
+        return self._amount
+    # end amount
+
+    @property
+    def debtor_name(self):
+        return self._r_ref.debtor_name
+    # end debtor_name
+
+    @property
+    def debtor_client_code(self):
+        return self._r_ref.debtor_client_code
+    # end debtor_client_code
+
+    @property
+    def debtor_fiscalcode(self):
+        return self._r_ref.debtor_fiscalcode
+    # end debtor_fiscalcode
+
+    @property
+    def debtor_vat_number(self):
+        return self._r_ref.debtor_vat_number
+    # end debtor_vat_number
+
+    @property
+    def debtor_vat_or_fiscode(self):
+        return self._r_ref.debtor_vat_or_fiscode
+    # end debtor_vat_or_fiscode
+
+    @property
+    def debtor_address(self):
+        return self._r_ref.debtor_address
+    # end debtor_address
+
+    @property
+    def debtor_city(self):
+        return self._r_ref.debtor_city
+    # end debtor_city
+
+    @property
+    def debtor_state(self):
+        return self._r_ref.debtor_state
+    # end debtor_state
+
+    @property
+    def debtor_zip(self):
+        return self._r_ref.debtor_zip
+    # end debtor_zip
+
+    @property
+    def debtor_bank(self):
+        return self._r_ref.debtor_bank
+    # end debtor_bank
+
+    @property
+    def invoice_number(self):
+        return self._r_ref.invoice_number
+    # end invoice_number
+
+    @property
+    def invoice_date(self):
+        return self._r_ref.invoice_date
+    # end invoice_date
+    
+    def __str__(self):
+        d_name = self.debtor_name[:25].ljust(25, ' ')
+        return f'{d_name} ({self.debtor_vat_or_fiscode}) - ' \
+               f'{self.duedate:%Y-%m-%d} - {self._desc} - {self.amount} €'
+    # end __str__
+    
+    def __repr__(self):
+        return self.__str__()
+    # end __repr__
+# end ReceiptGroup
 
 
 class Document:
@@ -299,7 +447,7 @@ class Document:
         self._receipts.append(rcpt)
     # end add_line
 
-    def render_cbi(self):
+    def render_cbi(self, group: bool = False):
         """
         Render the RiBa document in the CBI format
         :return: the CBI document representing the RiBa document
@@ -308,7 +456,37 @@ class Document:
         cbi_template = Template(
             text=importlib.resources.read_text(__package__ + '.templates', CBI_TEMPLATE_FILE)
         )
-        cbi_document = cbi_template.render(doc=self, lines=self._receipts)
+        
+        if group:
+            receipt_groups = self._group_receipts()
+            cbi_document = cbi_template.render(doc=self, lines=receipt_groups)
+        else:
+            cbi_document = cbi_template.render(doc=self, lines=self._receipts)
+        # end if
         return cbi_document
     # end render
+    
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # Private methods
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    @staticmethod
+    def _rcpt_key_func(rcpt: Receipt):
+        return rcpt.debtor_vat_or_fiscode, rcpt.duedate
+    # end rcpt_key_func
+    
+    def _group_receipts(self):
+        key_func = self._rcpt_key_func
+        
+        # Sort the receipts
+        receipts_sorted = sorted(self._receipts, key=key_func)
+        
+        # Group the receipts (same debtor and same duedate)
+        receipt_groups = [
+            # 'g' must be converted to a list because it's just an iterator
+            _ReceiptGroup(list(g))
+            for _, g in itertools.groupby(receipts_sorted, key=key_func)
+        ]
+        
+        return receipt_groups
+    # end _build_receipts_groups
 # end Document

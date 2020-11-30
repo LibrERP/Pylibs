@@ -1,0 +1,311 @@
+{
+  "creditor_company" : {
+    "partner_id": {
+      "name": "My Company",
+      "ref": "",
+      "vat": "IT04218940155",
+      "fiscalcode": "04218940155",
+      "street": "via Altinate, 108",
+      "city": "Padova",
+      "zip": "35121",
+      "state_id": {"code": "PD"}
+    },
+    "sia_code": "F8007"
+  },
+
+  "creditor_bank_account": {
+    "abi": "08982",
+    "cab": "62680",
+    "number": "222244446666"
+  },
+
+  "lines": [
+
+    {
+      "debtor_partner": {
+        "name": "Kissa Komics S.R.L.",
+        "ref": "",
+        "fiscalcode": "",
+        "vat": "IT04483400281",
+        "street": "Via Morgagni 30A ",
+        "city": "Padova",
+        "zip": "35121",
+        "state_id": {"code": "PD"}
+      },
+      "debtor_bank": {
+        "bank_name": "Banca Etica",
+        "abi": "05018",
+        "cab": "12101"
+      },
+      "invoice": {
+        "number": "FATT/2020/0150",
+        "date_invoice": "2020-09-21"
+      },
+      "duedate_move_line": {
+        "date_maturity": "2020-12-21",
+        "amount_residual": 800.00
+      }
+    },
+
+    {
+      "debtor_partner": {
+        "name": "BETTIN PIANOFORTI DI BETTIN ALBERTO & C. S.A.S.",
+        "ref": "",
+        "fiscalcode": "",
+        "vat": "IT00415620285",
+        "street": "VIA DANTE 86",
+        "city": "Padova",
+        "zip": "35139",
+        "state_id": {"code": "PD"}
+      },
+      "debtor_bank": {
+        "bank_name": "Banca Montepaschi",
+        "abi": "01030",
+        "cab": "12157"
+      },
+      "invoice": {
+        "number": "FATT/2020/0189",
+        "date_invoice": "2020-10-08"
+      },
+      "duedate_move_line": {
+        "date_maturity": "2020-12-30",
+        "amount_residual": 800.00
+      }
+    },
+
+    {
+      "debtor_partner": {
+        "name": "Kissa Komics S.R.L.",
+        "ref": "",
+        "fiscalcode": "",
+        "vat": "IT04483400281",
+        "street": "Via Morgagni 30A ",
+        "city": "Padova",
+        "zip": "35121",
+        "state_id": {"code": "PD"}
+      },
+      "debtor_bank": {
+        "bank_name": "Banca Etica",
+        "abi": "05018",
+        "cab": "12101"
+      },
+      "invoice": {
+        "number": "FATT/2020/0069",
+        "date_invoice": "2020-08-21"
+      },
+      "duedate_move_line": {
+        "date_maturity": "2020-09-21",
+        "amount_residual": 36.60
+      }
+    },
+
+    {
+      "debtor_partner": {
+        "name": "Kissa Komics S.R.L.",
+        "ref": "",
+        "fiscalcode": "",
+        "vat": "IT04483400281",
+        "street": "Via Morgagni 30A ",
+        "city": "Padova",
+        "zip": "35121",
+        "state_id": {"code": "PD"}
+      },
+      "debtor_bank": {
+        "bank_name": "Banca Etica",
+        "abi": "05018",
+        "cab": "12101"
+      },
+      "invoice": {
+        "number": "FATT/2020/0069",
+        "date_invoice": "2020-08-21"
+      },
+      "duedate_move_line": {
+        "date_maturity": "2020-11-21",
+        "amount_residual": 42.7
+      }
+    },
+
+    {
+      "debtor_partner": {
+        "name": "Kissa Komics S.R.L.",
+        "ref": "",
+        "fiscalcode": "",
+        "vat": "IT04483400281",
+        "street": "Via Morgagni 30A ",
+        "city": "Padova",
+        "zip": "35121",
+        "state_id": {"code": "PD"}
+      },
+      "debtor_bank": {
+        "bank_name": "Banca Etica",
+        "abi": "05018",
+        "cab": "12101"
+      },
+      "invoice": {
+        "number": "FATT/2020/0069",
+        "date_invoice": "2020-08-21"
+      },
+      "duedate_move_line": {
+        "date_maturity": "2020-12-21",
+        "amount_residual": 42.70
+      }
+    },
+
+    {
+      "debtor_partner": {
+        "name": "Kissa Komics S.R.L.",
+        "ref": "",
+        "fiscalcode": "",
+        "vat": "IT04483400281",
+        "street": "Via Morgagni 30A ",
+        "city": "Padova",
+        "zip": "35121",
+        "state_id": {"code": "PD"}
+      },
+      "debtor_bank": {
+        "bank_name": "Banca Etica",
+        "abi": "05018",
+        "cab": "12101"
+      },
+      "invoice": {
+        "number": "FATT/2020/0150",
+        "date_invoice": "2020-09-21"
+      },
+      "duedate_move_line": {
+        "date_maturity": "2020-11-21",
+        "amount_residual": 800.00
+      }
+    },
+    
+    {
+      "debtor_partner": {
+        "name": "BETTIN PIANOFORTI DI BETTIN ALBERTO & C. S.A.S.",
+        "ref": "",
+        "fiscalcode": "",
+        "vat": "IT00415620285",
+        "street": "VIA DANTE 86",
+        "city": "Padova",
+        "zip": "35139",
+        "state_id": {"code": "PD"}
+      },
+      "debtor_bank": {
+        "bank_name": "Banca Montepaschi",
+        "abi": "01030",
+        "cab": "12157"
+      },
+      "invoice": {
+        "number": "FATT/2020/0189",
+        "date_invoice": "2020-10-08"
+      },
+      "duedate_move_line": {
+        "date_maturity": "2021-01-30",
+        "amount_residual": 99.5
+      }
+    },
+
+    {
+      "debtor_partner": {
+        "name": "BETTIN PIANOFORTI DI BETTIN ALBERTO & C. S.A.S.",
+        "ref": "",
+        "fiscalcode": "",
+        "vat": "IT00415620285",
+        "street": "VIA DANTE 86",
+        "city": "Padova",
+        "zip": "35139",
+        "state_id": {"code": "PD"}
+      },
+      "debtor_bank": {
+        "bank_name": "Banca Montepaschi",
+        "abi": "01030",
+        "cab": "12157"
+      },
+      "invoice": {
+        "number": "FATT/2020/0186",
+        "date_invoice": "2020-09-28"
+      },
+      "duedate_move_line": {
+        "date_maturity": "2020-11-30",
+        "amount_residual": 2800
+      }
+    },
+
+    {
+      "debtor_partner": {
+        "name": "BETTIN PIANOFORTI DI BETTIN ALBERTO & C. S.A.S.",
+        "ref": "",
+        "fiscalcode": "",
+        "vat": "IT00415620285",
+        "street": "VIA DANTE 86",
+        "city": "Padova",
+        "zip": "35139",
+        "state_id": {"code": "PD"}
+      },
+      "debtor_bank": {
+        "bank_name": "Banca Montepaschi",
+        "abi": "01030",
+        "cab": "12157"
+      },
+      "invoice": {
+        "number": "FATT/2020/0189",
+        "date_invoice": "2020-10-08"
+      },
+      "duedate_move_line": {
+        "date_maturity": "2020-11-30",
+        "amount_residual": 800.00
+      }
+    },
+
+    {
+      "debtor_partner": {
+        "name": "Kissa Komics S.R.L.",
+        "ref": "",
+        "fiscalcode": "",
+        "vat": "IT04483400281",
+        "street": "Via Morgagni 30A ",
+        "city": "Padova",
+        "zip": "35121",
+        "state_id": {"code": "PD"}
+      },
+      "debtor_bank": {
+        "bank_name": "Banca Etica",
+        "abi": "05018",
+        "cab": "12101"
+      },
+      "invoice": {
+        "number": "FATT/2020/0030",
+        "date_invoice": "2020-04-02"
+      },
+      "duedate_move_line": {
+        "date_maturity": "2020-11-30",
+        "amount_residual": 1600.00
+      }
+    },
+
+    {
+      "debtor_partner": {
+        "name": "BETTIN PIANOFORTI DI BETTIN ALBERTO & C. S.A.S.",
+        "ref": "",
+        "fiscalcode": "",
+        "vat": "IT00415620285",
+        "street": "VIA DANTE 86",
+        "city": "Padova",
+        "zip": "35139",
+        "state_id": {"code": "PD"}
+      },
+      "debtor_bank": {
+        "bank_name": "Banca Montepaschi",
+        "abi": "01030",
+        "cab": "12157"
+      },
+      "invoice": {
+        "number": "FATT/2020/0032",
+        "date_invoice": "2020-10-28"
+      },
+      "duedate_move_line": {
+        "date_maturity": "2020-11-30",
+        "amount_residual": 270.00
+      }
+    }
+    
+  ]
+}
