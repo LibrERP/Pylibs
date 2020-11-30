@@ -191,7 +191,7 @@ def validate_sia(sia_code: typing.Union[str, bool, None]) -> None:
     # Verifica SIA: campo obbligatorio. Il formato sia prevede una
     # lettera seguita da 4 numeri
 
-    if sia_code is '' or sia_code is False or sia_code is None:
+    if sia_code == '' or sia_code is False or sia_code is None:
         raise SIAMissingError(
             'Codice SIA del creditore mancante'
         )
@@ -225,7 +225,7 @@ def validate_zip(zip_code: typing.Union[str, int, bool, None]) -> None:
     # Verifica CAP: se c'è deve essere numerico e di 5 caratteri,
     # ma può tranquillamente non esserci!!
 
-    if zip_code is '' or zip_code is False or zip_code is None:
+    if zip_code == '' or zip_code is False or zip_code is None:
         # Empty ZIP code is OK!
         return
 
