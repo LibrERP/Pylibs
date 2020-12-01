@@ -1,5 +1,5 @@
 import itertools
-from datetime import datetime
+from datetime import datetime, date
 import importlib.resources
 
 import typing
@@ -69,6 +69,11 @@ class Receipt:
         validate_zip(self.debtor_zip)
 
     # end __init__
+    
+    @property
+    def is_group(self):
+        return False
+    # end is_group
 
     @property
     def duedate(self):
@@ -156,6 +161,23 @@ class Receipt:
         return self._invoice.date_invoice
     # end invoice_date
     
+    @property
+    def grouping_key(self) -> typing.Tuple[str, str, str, date]:
+        """
+        Generate and return the grouping key used to group the class:`Receipt` objects when requested
+        
+        :returns: The grouping key
+        :rtype: Tuple
+        """
+        
+        return (
+            str(self.debtor_partner.id),
+            str(self._debtor_bank.abi),
+            str(self._debtor_bank.cab),
+            self.duedate
+        )
+    # end gkey
+    
     def __str__(self):
         name = self.debtor_name[:25].ljust(25, ' ')
         vat = self.debtor_vat_or_fiscode
@@ -174,7 +196,7 @@ class Receipt:
 # end Receipt
 
 
-class _ReceiptGroup:
+class ReceiptGroup:
     """
     Class that represents a group of RiBa receipt to be rendered as a single line in the RiBa document.
     
@@ -202,8 +224,10 @@ class _ReceiptGroup:
         # Description of the group listing the numbers of the invoices
         # referred by the grouped lines
         self._desc = ', '.join(
-            map(lambda r: f'{r.invoice_number} ({r.invoice_date:%Y-%m-%d})', self._receipts)
+            map(lambda r: f'{r.invoice_number} ({r.invoice_date:%Y-%m-%d}) € {r.amount:.2f}', self._receipts)
         )
+        
+        # Total amount of the group
         self._amount = sum(
             map(lambda r: r.amount, self._receipts)
         )
@@ -216,6 +240,16 @@ class _ReceiptGroup:
         
         # Same debtor bank
     # end __init__
+    
+    @property
+    def is_group(self):
+        return len(self._receipts) > 1
+    # end is_group
+    
+    @property
+    def grouped_receipts(self):
+        return self._receipts
+    # end is_group
 
     @property
     def duedate(self):
@@ -453,10 +487,13 @@ class Document:
         :return: the CBI document representing the RiBa document
         :rtype: str
         """
+        
+        # Load the Mako template
         cbi_template = Template(
             text=importlib.resources.read_text(__package__ + '.templates', CBI_TEMPLATE_FILE)
         )
         
+        # Group the receipts if requested
         if group:
             receipt_groups = self._group_receipts()
             cbi_document = cbi_template.render(doc=self, lines=receipt_groups)
@@ -469,24 +506,21 @@ class Document:
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Private methods
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    @staticmethod
-    def _rcpt_key_func(rcpt: Receipt):
-        return rcpt.debtor_vat_or_fiscode, rcpt.duedate
-    # end rcpt_key_func
-    
     def _group_receipts(self):
-        key_func = self._rcpt_key_func
         
         # Sort the receipts
-        receipts_sorted = sorted(self._receipts, key=key_func)
+        def key_f(x): return x.grouping_key
+        
+        # Sort the receipts
+        rcpt_sorted = sorted(self._receipts, key=key_f)
         
         # Group the receipts (same debtor and same duedate)
-        receipt_groups = [
+        rcpt_groups = [
             # 'g' must be converted to a list because it's just an iterator
-            _ReceiptGroup(list(g))
-            for _, g in itertools.groupby(receipts_sorted, key=key_func)
+            ReceiptGroup(list(g))
+            for _, g in itertools.groupby(rcpt_sorted, key=key_f)
         ]
         
-        return receipt_groups
-    # end _build_receipts_groups
+        return rcpt_groups
+    # end _group_receipts
 # end Document

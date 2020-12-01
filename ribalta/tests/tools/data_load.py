@@ -23,19 +23,19 @@ def load_data_as_bytes(filename: str):
 
 
 class FakeData:
-    def __init__(self, creditor_company, creditor_bank_account, lines):
+    def __init__(self, creditor_company, creditor_bank_account, receipts):
         self.head = {
             'creditor_company': CompanyFake(**creditor_company),
             'creditor_bank_account': BankAccountFake(**creditor_bank_account),
         }
-        self.lines = [
+        self.receipts = [
             {
-                'debtor_partner': PartnerFake(**line['debtor_partner']),
-                'debtor_bank': BankFake(**line['debtor_bank']),
-                'invoice': InvoiceFake(**line['invoice']),
-                'duedate_move_line': MoveLineFake(**line['duedate_move_line']),
+                'debtor_partner': PartnerFake(**rcpt['debtor_partner']),
+                'debtor_bank': BankFake(**rcpt['debtor_bank']),
+                'invoice': InvoiceFake(**rcpt['invoice']),
+                'duedate_move_line': MoveLineFake(**rcpt['duedate_move_line']),
             }
-            for line in lines
+            for rcpt in receipts
         ]
 
     # end __init__

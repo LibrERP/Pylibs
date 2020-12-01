@@ -44,8 +44,29 @@
         return (last_char_index - first_char_index) + 1
     # end fldsz
 
-    def riferimento_al_debito(invoice_num, invoice_date, amount):
-        msg = unidecode(f'PER LA FATTURA N. {invoice_num} DEL {invoice_date.strftime("%d/%m/%Y")} IMP {amount}')
+    def riferimento_al_debito(receipt):
+        if receipt.is_group:
+
+            # Build a description for each receipt
+            descriptions = map(
+                lambda r: f'{r.invoice_number} {r.amount:.2f}',
+                receipt.grouped_receipts
+            )
+
+            # Merge the descriptions
+            msg = unidecode(f'Fatt: {", ".join(descriptions)}')
+
+        else:
+
+            i_num = receipt.invoice_number
+            i_date = receipt.invoice_date
+            i_amount = receipt.amount
+
+            msg = unidecode(f'PER LA FATTURA N. {i_num} DEL {i_date:%d/%m/%Y} IMP {i_amount}')
+
+        # end if
+
+        # Format the message and return the result
         msg_formatted = msg.ljust(80, ' ')[:80]
         return msg_formatted
     # end riferimento_al_debito
@@ -295,7 +316,7 @@ ${num_progr}\
 ##     11-50 + 51-90 - Riferimento al debito
 ##     91-100 - Filler
 ##     101-116 - Codifica fiscale del creditore
-${riferimento_al_debito(line.invoice_number, line.invoice_date, line.amount)}\
+${riferimento_al_debito(line)}\
 ${BLANK_CHAR * fldsz(91, 100)}\
 ${doc.creditor_vat_or_fiscode | f_ljust16}\
 ## - - - - - - - - - -

@@ -1,6 +1,7 @@
 {
   "creditor_company" : {
-    "partner_id": {
+    "partner": {
+      "id": 1,
       "name": "My Company",
       "ref": "",
       "vat": "IT04218940155",
@@ -19,10 +20,11 @@
     "number": "222244446666"
   },
 
-  "lines": [
+  "receipts": [
 
     {
       "debtor_partner": {
+        "id": 28,
         "name": "Kissa Komics S.R.L.",
         "ref": "",
         "fiscalcode": "",
@@ -49,6 +51,7 @@
 
     {
       "debtor_partner": {
+        "id": 36,
         "name": "BETTIN PIANOFORTI DI BETTIN ALBERTO & C. S.A.S.",
         "ref": "",
         "fiscalcode": "",
@@ -75,6 +78,7 @@
 
     {
       "debtor_partner": {
+        "id": 28,
         "name": "Kissa Komics S.R.L.",
         "ref": "",
         "fiscalcode": "",
@@ -101,6 +105,7 @@
 
     {
       "debtor_partner": {
+        "id": 28,
         "name": "Kissa Komics S.R.L.",
         "ref": "",
         "fiscalcode": "",
@@ -127,6 +132,7 @@
 
     {
       "debtor_partner": {
+        "id": 28,
         "name": "Kissa Komics S.R.L.",
         "ref": "",
         "fiscalcode": "",
@@ -153,6 +159,7 @@
 
     {
       "debtor_partner": {
+        "id": 28,
         "name": "Kissa Komics S.R.L.",
         "ref": "",
         "fiscalcode": "",
@@ -179,6 +186,7 @@
     
     {
       "debtor_partner": {
+        "id": 36,
         "name": "BETTIN PIANOFORTI DI BETTIN ALBERTO & C. S.A.S.",
         "ref": "",
         "fiscalcode": "",
@@ -205,6 +213,7 @@
 
     {
       "debtor_partner": {
+        "id": 36,
         "name": "BETTIN PIANOFORTI DI BETTIN ALBERTO & C. S.A.S.",
         "ref": "",
         "fiscalcode": "",
@@ -231,6 +240,7 @@
 
     {
       "debtor_partner": {
+        "id": 36,
         "name": "BETTIN PIANOFORTI DI BETTIN ALBERTO & C. S.A.S.",
         "ref": "",
         "fiscalcode": "",
@@ -257,6 +267,7 @@
 
     {
       "debtor_partner": {
+        "id": 28,
         "name": "Kissa Komics S.R.L.",
         "ref": "",
         "fiscalcode": "",
@@ -283,6 +294,7 @@
 
     {
       "debtor_partner": {
+        "id": 36,
         "name": "BETTIN PIANOFORTI DI BETTIN ALBERTO & C. S.A.S.",
         "ref": "",
         "fiscalcode": "",

@@ -18,8 +18,8 @@ def test_riba_with_model():
     # Build the CBI document object: use the test data
     # to perform the same steps of the real building process
     riba_doc = Document(**test_data.head)
-    for line in test_data.lines:
-        riba_doc.add_receipt(Receipt(**line))
+    for rcpt in test_data.receipts:
+        riba_doc.add_receipt(Receipt(**rcpt))
     # end for
 
     # Render the riba_doc as string
@@ -38,4 +38,31 @@ def test_riba_with_model():
     # Perform the validation against the reference model
     model_validator.validate_data(riba_doc)
 
+# end test_riba_ok
+
+
+def test_riba_grouping():
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # Test environment setup
+
+    # Read data from json
+    test_data = FakeData.build_from_test_data('riba_collapsible_ok')
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # Emulate the real process using the test data
+
+    # Build the CBI document object: use the test data
+    # to perform the same steps of the real building process
+    riba_doc = Document(**test_data.head)
+    for rcpt in test_data.receipts:
+        riba_doc.add_receipt(Receipt(**rcpt))
+    # end for
+
+    # Render the riba_doc as string
+    cbi_doc = riba_doc.render_cbi()
+    cbi_doc_grouped = riba_doc.render_cbi(group=True)
+    
+    # Ungrouped CBI document must have more records than grouped one
+    # because the test data used permits grouping
+    assert len(cbi_doc.split('\r\n')) > len(cbi_doc_grouped.split('\r\n'))
 # end test_riba_ok

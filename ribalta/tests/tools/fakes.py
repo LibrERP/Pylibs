@@ -43,10 +43,11 @@ class MoveLineFake:
 class PartnerFake:
     def __init__(
             self,
-            name, ref='',
+            id, name, ref='',
             vat='', fiscalcode='',
             street='', city='', zip='', state_id=None
     ):
+        self.id = id
         self.name = name
         self.ref = ref
         self.vat = vat
@@ -65,8 +66,8 @@ class PartnerFake:
 # end PartnerFake
 
 class CompanyFake:
-    def __init__(self, partner_id, sia_code):
-        self.partner_id = PartnerFake(**partner_id)
+    def __init__(self, partner, sia_code):
+        self.partner_id = PartnerFake(**partner)
         self.sia_code = sia_code
     # end init
 

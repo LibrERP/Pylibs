@@ -1,6 +1,7 @@
 {
   "creditor_company" : {
-    "partner_id": {
+    "partner": {
+      "id": 1,
       "name": "",
       "ref": "",
       "vat": "",
@@ -18,7 +19,8 @@
     "number": ""
   },
   
-  "lines": [
+  "receipts": [
+    
     {
       "duedate_move_line": {
         "date_maturity": "",
@@ -29,6 +31,7 @@
         "date_invoice": ""
       },
       "debtor_partner": {
+        "id": "",
         "name": "",
         "ref": "",
         "fiscalcode": "",
@@ -46,6 +49,7 @@
         "cab": ""
       }
     },
+    
     {
       "duedate_move_line": {
         "date_maturity": "",
@@ -56,6 +60,7 @@
         "date_invoice": ""
       },
       "debtor_partner": {
+        "id": "",
         "name": "",
         "ref": "",
         "fiscalcode": "",
