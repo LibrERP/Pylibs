@@ -76,7 +76,13 @@
     # end f_unidecode
 
     def f_acct_num(account_number):
-        return str(account_number).strip().ljust(12, '0')[:12]
+        # Take the last 12 characters of the supplied account number,
+        # this way we can safely manage Italian IBAN codes ...even if
+        # the supplied code is an IBAN code the account number will be
+        # extracted correctly.
+        # If the supplied number is less than 12 characters the whole
+        # code will be used.
+        return str(account_number).strip().rjust(12, '0')[-12:]
     # end f_acct_num
 
     def loop_num_to_num_progr(loop_itration_number):
@@ -144,7 +150,7 @@ ${R_IB_START}\
 ## 4-8 - Mittente: codice SIA dell'azienda mittente
 ${doc.sia_code | f_sia}\
 ## 9-13 - Ricevente: ABI banca assuntrice
-${doc.creditor_bank_account.abi | f_abi}\
+${doc.creditor_bank_account.bank_abi | f_abi}\
 ## 14-19 - Data creazione: data creazione del flusso da parte dell'azienda (GGMMAA)
 ${doc.creation_date.strftime('%d%m%y')}\
 ## 20-39 - Nome supporto: composizione libera, ma deve essere univoco nell'ambito della data di creazione a parità di mittente e ricevente
@@ -204,9 +210,9 @@ ${line.amount | f_amount_line}\
 ##     48-52 - ABI assuntrice
 ##     53-57 - CAB assuntrice
 ##     58-69 - Numero di conto
-${doc.creditor_bank_account.abi | f_abi}\
-${doc.creditor_bank_account.cab | f_cab}\
-${doc.creditor_bank_account.acc_number | f_acct_num}\
+${doc.creditor_bank_account.bank_abi | f_abi}\
+${doc.creditor_bank_account.bank_cab | f_cab}\
+${doc.creditor_bank_account.sanitized_acc_number | f_acct_num}\
 ## - - - - - - - - - -
 ## Coordinate banca domiciliataria
 ##     70-74 - ABI domiciliataria
@@ -297,7 +303,7 @@ ${num_progr}\
 ${line.debtor_address | f_unidecode,f_ljust30}\
 ${line.debtor_zip | f_zip_code}\
 ${f'{line.debtor_city} {line.debtor_state}' | f_ljust25}\
-${(line.debtor_bank.bank_name or '') | f_ljust50}\
+${(line.debtor_bank.name or '') | f_ljust50}\
 ## - - - - - - - - - -
 ${R_END}
 ##
@@ -393,7 +399,7 @@ ${R_EF_START}\
 ## 4-8 - UGUALE A CAMPO CORRISPONDENTE NEL RECORD ' IB' -> Mittente: codice SIA dell'azienda mittente
 ${doc.sia_code| f_sia}\
 ## 9-13 - UGUALE A CAMPO CORRISPONDENTE NEL RECORD ' IB' -> Ricevente: ABI banca assuntrice
-${doc.creditor_bank_account.abi | f_abi}\
+${doc.creditor_bank_account.bank_abi | f_abi}\
 ## 14-19 - UGUALE A CAMPO CORRISPONDENTE NEL RECORD ' IB' -> Data creazione: data creazione del flusso da parte dell'azienda (GGMMAA)
 ${doc.creation_date.strftime('%d%m%y')}\
 ## 20-39 - UGUALE A CAMPO CORRISPONDENTE NEL RECORD ' IB' -> Nome supporto: composizione libera, ma deve essere univoco nell'ambito della data di creazione a parità di mittente e ricevente

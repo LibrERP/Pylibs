@@ -117,24 +117,35 @@ def validate_bank_account_number(
         )
     
     elif isinstance(account_number, int):
-        validate_bank_account_number(str(account_number).rjust(12, '0'))
+        acc_number_str = str(account_number).rjust(12, '0')
+        validate_bank_account_number(acc_number_str)
 
     elif isinstance(account_number, str):
-        if not account_number.isnumeric():
+        acc_number_str = str(account_number)
+        
+        # Pick the last 12 characters to correctly manage italian IBAN passed
+        # as account numbers
+        if len(acc_number_str) == 27 and acc_number_str.startswith('IT'):
+            acc_number_str = acc_number_str[-12:]
+        else:
+            acc_number_str = account_number
+        # end if
+        
+        if not acc_number_str.isnumeric():
             raise AcctNumberInvalidError(
                 f'Numero di contro corrente del creditore errato'
                 f' - '
                 f'Il contro coorente deve essere un numero di 12 cifre'
             )
 
-        elif not len(account_number) == 12:
+        elif not len(acc_number_str) == 12:
             raise AcctNumberInvalidError(
                 f'Numero di contro corrente del creditore errato'
                 f' - '
                 f'Il contro coorente deve essere un numero di 12 cifre'
             )
 
-        elif int(account_number) == 0:
+        elif int(acc_number_str) == 0:
             raise AcctNumberInvalidError(
                 f'Numero di contro corrente del creditore errato'
                 f' - '

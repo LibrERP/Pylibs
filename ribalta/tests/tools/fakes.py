@@ -4,7 +4,7 @@ from types import SimpleNamespace
 
 class BankFake:
     def __init__(self, abi, cab, bank_name=''):
-        self.bank_name = bank_name
+        self.name = bank_name
         self.abi = abi
         self.cab = cab
     # end init
@@ -14,9 +14,9 @@ class BankFake:
 
 class BankAccountFake:
     def __init__(self, abi, cab, number):
-        self.acc_number = number
-        self.abi = abi
-        self.cab = cab
+        self.sanitized_acc_number = number
+        self.bank_abi = abi
+        self.bank_cab = cab
     # end init
 
 

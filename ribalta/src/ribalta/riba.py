@@ -5,7 +5,7 @@ import importlib.resources
 import typing
 from mako.template import Template
 
-from .utils.errors import FiscalcodeMissingError
+from .utils.errors import FiscalcodeMissingError, PartnerBankMissing
 from .utils.odoo_stuff import _
 from .utils.validators import (
     validate_abi,
@@ -52,6 +52,11 @@ class Receipt:
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
         # Cab and ABI required
+        if not self._debtor_bank:
+            raise PartnerBankMissing(
+                f'No bank specified for {self.debtor_name}'
+            )
+        # end if
         abi = self.debtor_bank.abi
         cab = self.debtor_bank.cab
 
@@ -362,13 +367,15 @@ class Document:
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
         # CAB and ABI required
-        abi = self.creditor_bank_account.abi
-        cab = self.creditor_bank_account.cab
+        abi = self.creditor_bank_account.bank_abi
+        cab = self.creditor_bank_account.bank_cab
 
         validate_abi(abi, self.creditor_company_name)
         validate_cab(cab, self.creditor_company_name)
 
-        validate_bank_account_number(self.creditor_bank_account.acc_number)
+        validate_bank_account_number(
+            self.creditor_bank_account.sanitized_acc_number
+        )
 
         validate_sia(self.sia_code)
 
@@ -460,6 +467,8 @@ class Document:
 
     @property
     def name(self):
+        """Return the "Nome supporto" as specified in the reference
+         document CBI-ICI-001 Versione: v. 6.01"""
         return self._creation_date.strftime('%d%m%y%H%M%S') + str(self.sia_code)
     # end support_name
 
