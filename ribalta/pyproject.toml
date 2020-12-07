@@ -25,6 +25,7 @@ classifiers=[
 test = [
     "pytest >=2.7.3",
     "pytest-cov",
+    "python-dateutil",
 ]
 
 doc = []
