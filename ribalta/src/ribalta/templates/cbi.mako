@@ -107,7 +107,7 @@
 
     def f_ljust_and_trim(content, width, fill_char):
         return unidecode(str(content)).strip().ljust(width, fill_char)[:width]
-    # end ljust_and_trim
+    # end f_ljust_and_trim
 
     f_ljust16 = lambda content: f_ljust_and_trim(content, 16, ' ')
     f_ljust20 = lambda content: f_ljust_and_trim(content, 20, ' ')
@@ -116,7 +116,7 @@
     f_ljust30 = lambda content: f_ljust_and_trim(content, 30, ' ')
     f_ljust50 = lambda content: f_ljust_and_trim(content, 50, ' ')
     f_ljust60 = lambda content: f_ljust_and_trim(content, 60, ' ')
-    f_creditor_descr = f_ljust24
+    f_creditor_descr = lambda content: f_rjust_and_trim(content, 24, ' ')
 
     def f_amount_line(amount):
         amount_cents = int(round(float(amount) * 100))
@@ -254,10 +254,10 @@ ${num_progr}\
 ##     35-58 - Descrizione del creditore: primo segmento, testo libero
 ##     59-82 - Descrizione del creditore: primo segmento, testo libero
 ##     83-106 - Descrizione del creditore: primo segmento, testo libero
-${doc.creditor_company_name        | f_creditor_descr}\
-${doc.creditor_company_addr_street | f_creditor_descr}\
-${doc.creditor_company_addr_zip    | f_creditor_descr}\
-${doc.creditor_company_ref         | f_creditor_descr}\
+${doc.creditor_company_name              | f_creditor_descr}\
+${doc.creditor_company_addr_street       | f_creditor_descr}\
+${doc.creditor_company_addr_zip_and_city | f_creditor_descr}\
+${doc.creditor_fiscalcode                | f_creditor_descr}\
 ## - - - - - - - - - -
 ## 107-120 - Filler
 ${BLANK_CHAR * fldsz(107, 120)}\
