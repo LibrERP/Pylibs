@@ -116,7 +116,8 @@
     f_ljust30 = lambda content: f_ljust_and_trim(content, 30, ' ')
     f_ljust50 = lambda content: f_ljust_and_trim(content, 50, ' ')
     f_ljust60 = lambda content: f_ljust_and_trim(content, 60, ' ')
-    f_creditor_descr = lambda content: f_rjust_and_trim(content, 24, ' ')
+    f_creditor_descr = f_ljust24
+    f_creditor_fiscode = lambda content: f_rjust_and_trim(content, 24, ' ')
 
     def f_amount_line(amount):
         amount_cents = int(round(float(amount) * 100))
@@ -257,7 +258,7 @@ ${num_progr}\
 ${doc.creditor_company_name              | f_creditor_descr}\
 ${doc.creditor_company_addr_street       | f_creditor_descr}\
 ${doc.creditor_company_addr_zip_and_city | f_creditor_descr}\
-${doc.creditor_fiscalcode                | f_creditor_descr}\
+${doc.creditor_fiscalcode                | f_creditor_fiscode}\
 ## - - - - - - - - - -
 ## 107-120 - Filler
 ${BLANK_CHAR * fldsz(107, 120)}\
