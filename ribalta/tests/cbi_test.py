@@ -4,7 +4,7 @@ from .tools.validators import CBIReferenceModelValidator, CBIFormatValidator
 from ribalta.riba import Document, Receipt
 
 
-def test_riba_with_model():
+def test_reference_riba_ok():
 
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     # Test environment setup
@@ -38,7 +38,43 @@ def test_riba_with_model():
     # Perform the validation against the reference model
     model_validator.validate_data(riba_doc)
 
-# end test_riba_ok
+# end test_reference_riba_ok
+
+
+def test_reference_riba_cred_no_fiscode():
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # Test environment setup
+
+    # Read data from json
+    test_data = FakeData.build_from_test_data('riba_cred_no_fiscode')
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # Emulate the real process using the test data
+
+    # Build the CBI document object: use the test data
+    # to perform the same steps of the real building process
+    riba_doc = Document(**test_data.head)
+    for rcpt in test_data.receipts:
+        riba_doc.add_receipt(Receipt(**rcpt))
+    # end for
+
+    # Render the riba_doc as string
+    riba_doc = riba_doc.render_cbi()
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    # Validate the result against the reference document
+
+    # Build the validation objects
+    format_validator = CBIFormatValidator(riba_doc)
+    model_validator = CBIReferenceModelValidator.build_from_reference_model('riba_cred_no_fiscode')
+
+    # Check document format correctness
+    format_validator.validate()
+
+    # Perform the validation against the reference model
+    model_validator.validate_data(riba_doc)
+
+# end test_reference_riba_cred_no_fiscode
 
 
 def test_riba_grouping():

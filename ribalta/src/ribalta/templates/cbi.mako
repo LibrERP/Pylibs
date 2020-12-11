@@ -258,7 +258,7 @@ ${num_progr}\
 ${doc.creditor_company_name              | f_creditor_descr}\
 ${doc.creditor_company_addr_street       | f_creditor_descr}\
 ${doc.creditor_company_addr_zip_and_city | f_creditor_descr}\
-${doc.creditor_fiscalcode                | f_creditor_fiscode}\
+${doc.creditor_fiscode_or_vat            | f_creditor_fiscode}\
 ## - - - - - - - - - -
 ## 107-120 - Filler
 ${BLANK_CHAR * fldsz(107, 120)}\
@@ -279,7 +279,7 @@ ${num_progr}\
 ##     11-40 + 41-70 - Descrizione del debitore: due segmenti da 30 caratteri accorpati
 ##     41-70 - Codifica fiscale: codice fiscale cliente debitore
 ${line.debtor_name | f_ljust60}\
-${line.debtor_vat_or_fiscode | f_fiscode}\
+${line.debtor_fiscalcode | f_fiscode}\
 ## - - - - - - - - - -
 ## 87-120 - Filler
 ${BLANK_CHAR * fldsz(87, 120)}\
@@ -325,7 +325,7 @@ ${num_progr}\
 ##     101-116 - Codifica fiscale del creditore
 ${riferimento_al_debito(line)}\
 ${BLANK_CHAR * fldsz(91, 100)}\
-${doc.creditor_vat_or_fiscode | f_ljust16}\
+${doc.creditor_fiscode_or_vat | f_ljust16}\
 ## - - - - - - - - - -
 ## 117-120 - Filler
 ${BLANK_CHAR * fldsz(117, 120)}\

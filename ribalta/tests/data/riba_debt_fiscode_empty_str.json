@@ -4,8 +4,8 @@
       "id": 1,
       "name": "My Company",
       "ref": "",
-      "vat": "",
-      "fiscalcode": "",
+      "vat": "IT04218940155",
+      "fiscalcode": "04218940155",
       "street": "via Altinate, 108",
       "city": "Padova",
       "zip": "35121",
@@ -29,7 +29,7 @@
         "ref": "",
         "fiscalcode": "",
         "vat": "IT04483400281",
-        "street": "Via Morgagni 30/A ",
+        "street": "Via Morgagni 30A ",
         "city": "Padova",
         "zip": "35121",
         "state_id": {"code": "PD"}
@@ -56,7 +56,7 @@
         "ref": "",
         "fiscalcode": "",
         "vat": "IT04483400281",
-        "street": "Via Morgagni 30/A ",
+        "street": "Via Morgagni 30A ",
         "city": "Padova",
         "zip": "35121",
         "state_id": {"code": "PD"}
@@ -83,7 +83,7 @@
         "ref": "",
         "fiscalcode": "",
         "vat": "IT04483400281",
-        "street": "Via Morgagni 30/A ",
+        "street": "Via Morgagni 30A ",
         "city": "Padova",
         "zip": "35121",
         "state_id": {"code": "PD"}

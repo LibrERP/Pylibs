@@ -51,7 +51,7 @@ class Receipt:
         # Sanity checks
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-        # Cab and ABI required
+        # CAB and ABI required
         if not self._debtor_bank:
             raise PartnerBankMissing(
                 f'No bank specified for {self.debtor_name}'
@@ -63,10 +63,10 @@ class Receipt:
         validate_abi(abi, self.debtor_name)
         validate_cab(cab, self.debtor_name)
 
-        # At least one of VAT or fiscal code required
-        if not self.debtor_vat_or_fiscode:
+        # Fiscal code required
+        if not self.debtor_fiscalcode:
             raise FiscalcodeMissingError(
-                _('No VAT or Fiscal Code specified for ') + self.debtor_name
+                _('Fiscal Code not specified for ') + self.debtor_name
             )
         # end if
 
@@ -112,20 +112,17 @@ class Receipt:
 
     @property
     def debtor_vat_number(self):
-        # Since CBI are used only in Italy remove the leading IT from VAT code
         if not self._debtor_partner.vat:
             return False
-        elif self._debtor_partner.vat.lower().startswith('it'):
-            return self._debtor_partner.vat[2:]
         else:
             return self._debtor_partner.vat
         # end if
     # end debtor_vat_number
 
     @property
-    def debtor_vat_or_fiscode(self):
-        return self.debtor_vat_number or self.debtor_fiscalcode
-    # end debtor_vat_or_fiscode
+    def debtor_fiscode_or_vat(self):
+        return self.debtor_fiscalcode or self.debtor_vat_number
+    # end debtor_fiscode_or_vat
 
     @property
     def debtor_address(self):
@@ -191,7 +188,7 @@ class Receipt:
     
     def __str__(self):
         name = self.debtor_name[:25].ljust(25, ' ')
-        vat = self.debtor_vat_or_fiscode
+        vat = self.debtor_fiscode_or_vat
         inv_num = self.invoice_number
         inv_date = self.invoice_date
         due_date = self.duedate
@@ -293,9 +290,9 @@ class ReceiptGroup:
     # end debtor_vat_number
 
     @property
-    def debtor_vat_or_fiscode(self):
-        return self._r_ref.debtor_vat_or_fiscode
-    # end debtor_vat_or_fiscode
+    def debtor_fiscode_or_vat(self):
+        return self._r_ref.debtor_fiscode_or_vat
+    # end debtor_fiscode_or_vat
 
     @property
     def debtor_address(self):
@@ -334,7 +331,7 @@ class ReceiptGroup:
     
     def __str__(self):
         d_name = self.debtor_name[:25].ljust(25, ' ')
-        return f'{d_name} ({self.debtor_vat_or_fiscode}) - ' \
+        return f'{d_name} ({self.debtor_fiscode_or_vat}) - ' \
                f'{self.duedate:%Y-%m-%d} - {self._desc} - {self.amount} €'
     # end __str__
     
@@ -385,7 +382,7 @@ class Document:
 
         validate_sia(self.sia_code)
 
-        if not self.creditor_vat_or_fiscode:
+        if not self.creditor_fiscode_or_vat:
             raise FiscalcodeMissingError(
                 _('No VAT or Fiscal Code specified for ') + self.creditor_company_name
             )
@@ -402,30 +399,27 @@ class Document:
 
     @property
     def creditor_company_name(self):
-        return self._creditor_company.partner_id.name or ''
+        return self._creditor_company.partner_id.name
     # end creditor_company
 
     @property
     def creditor_fiscalcode(self):
-        return self._creditor_company.partner_id.fiscalcode or ''
+        return self._creditor_company.partner_id.fiscalcode
     # end creditor_fiscalcode
 
     @property
     def creditor_vat_number(self):
-        # Since CBI are used only in Italy remove the leading IT from VAT code
         if not self._creditor_company.partner_id.vat:
             return False
-        elif self._creditor_company.partner_id.vat.lower().startswith('it'):
-            return self._creditor_company.partner_id.vat[2:]
         else:
             return self._creditor_company.partner_id.vat
         # end if
     # end creditor_vat_number
 
     @property
-    def creditor_vat_or_fiscode(self):
-        return self.creditor_vat_number or self.creditor_fiscalcode
-    # end creditor_vat_or_fiscode
+    def creditor_fiscode_or_vat(self):
+        return self.creditor_fiscalcode or self.creditor_vat_number
+    # end creditor_fiscode_or_vat
 
     @property
     def creditor_company_ref(self):
