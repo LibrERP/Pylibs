@@ -402,12 +402,12 @@ class Document:
 
     @property
     def creditor_company_name(self):
-        return self._creditor_company.partner_id.name
+        return self._creditor_company.partner_id.name or ''
     # end creditor_company
 
     @property
     def creditor_fiscalcode(self):
-        return self._creditor_company.partner_id.fiscalcode
+        return self._creditor_company.partner_id.fiscalcode or ''
     # end creditor_fiscalcode
 
     @property
