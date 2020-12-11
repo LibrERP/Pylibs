@@ -158,12 +158,18 @@ class Receipt:
 
     @property
     def invoice_number(self):
-        return self._invoice.number
+        if self._invoice:
+            return self._invoice.number
+        else:
+            return self._duedate_move_line.move_id.name
     # end invoice_number
 
     @property
     def invoice_date(self):
-        return self._invoice.date_invoice
+        if self._invoice:
+            return self._invoice.date_invoice
+        else:
+            return self._duedate_move_line.move_id.invoice_date
     # end invoice_date
     
     @property
