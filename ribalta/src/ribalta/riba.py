@@ -457,7 +457,7 @@ class Document:
         state = self._creditor_company.partner_id.state_id or False
         
         if state:
-            return f'{zip_code} {city} ({state.code})'
+            return f'{zip_code} {city} {state.code}'
         else:
             return f'{zip_code} {city}'
         # end if

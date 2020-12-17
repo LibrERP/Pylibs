@@ -252,9 +252,9 @@ ${R_20_START}\
 ${num_progr}\
 ## Descrizione del creditore (4 segmenti da 24 caratteri)
 ##     11-34 - Descrizione del creditore: primo segmento, testo libero
-##     35-58 - Descrizione del creditore: primo segmento, testo libero
-##     59-82 - Descrizione del creditore: primo segmento, testo libero
-##     83-106 - Descrizione del creditore: primo segmento, testo libero
+##     35-58 - Descrizione del creditore: secondo segmento, testo libero
+##     59-82 - Descrizione del creditore: terzo segmento, testo libero
+##     83-106 - Descrizione del creditore: quarto segmento, testo libero
 ${doc.creditor_company_name                | f_creditor_descr}\
 ${doc.creditor_company_addr_street         | f_creditor_descr}\
 ${doc.creditor_company_addr_zip_city_state | f_creditor_descr}\
