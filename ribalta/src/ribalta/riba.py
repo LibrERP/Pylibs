@@ -451,6 +451,19 @@ class Document:
     # end creditor_company
 
     @property
+    def creditor_company_addr_zip_city_state(self):
+        zip_code = self._creditor_company.partner_id.zip or ''
+        city = self._creditor_company.partner_id.city or ''
+        state = self._creditor_company.partner_id.state_id or False
+        
+        if state:
+            return f'{zip_code} {city} ({state.code})'
+        else:
+            return f'{zip_code} {city}'
+        # end if
+    # end creditor_company
+
+    @property
     def creditor_bank_account(self):
         return self._creditor_bank_account
     # end creditor_bank_account

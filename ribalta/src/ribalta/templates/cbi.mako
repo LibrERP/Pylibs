@@ -255,10 +255,10 @@ ${num_progr}\
 ##     35-58 - Descrizione del creditore: primo segmento, testo libero
 ##     59-82 - Descrizione del creditore: primo segmento, testo libero
 ##     83-106 - Descrizione del creditore: primo segmento, testo libero
-${doc.creditor_company_name              | f_creditor_descr}\
-${doc.creditor_company_addr_street       | f_creditor_descr}\
-${doc.creditor_company_addr_zip_and_city | f_creditor_descr}\
-${doc.creditor_fiscode_or_vat            | f_creditor_fiscode}\
+${doc.creditor_company_name                | f_creditor_descr}\
+${doc.creditor_company_addr_street         | f_creditor_descr}\
+${doc.creditor_company_addr_zip_city_state | f_creditor_descr}\
+${doc.creditor_fiscode_or_vat              | f_creditor_fiscode}\
 ## - - - - - - - - - -
 ## 107-120 - Filler
 ${BLANK_CHAR * fldsz(107, 120)}\
