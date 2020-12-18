@@ -109,6 +109,9 @@
         return unidecode(str(content)).strip().ljust(width, fill_char)[:width]
     # end f_ljust_and_trim
 
+    f_ljust2 = lambda content: f_ljust_and_trim(content, 2, ' ')
+    f_ljust5 = lambda content: f_ljust_and_trim(content, 5, ' ')
+    f_ljust15 = lambda content: f_ljust_and_trim(content, 15, ' ')
     f_ljust16 = lambda content: f_ljust_and_trim(content, 16, ' ')
     f_ljust20 = lambda content: f_ljust_and_trim(content, 20, ' ')
     f_ljust24 = lambda content: f_ljust_and_trim(content, 24, ' ')
@@ -116,7 +119,11 @@
     f_ljust30 = lambda content: f_ljust_and_trim(content, 30, ' ')
     f_ljust50 = lambda content: f_ljust_and_trim(content, 50, ' ')
     f_ljust60 = lambda content: f_ljust_and_trim(content, 60, ' ')
+    
     f_creditor_descr = f_ljust24
+    f_creditor_zip   = f_ljust5
+    f_creditor_city  = f_ljust15
+    f_creditor_state = f_ljust2
     f_creditor_fiscode = lambda content: f_rjust_and_trim(content, 24, ' ')
 
     def f_amount_line(amount):
@@ -251,14 +258,18 @@ ${R_20_START}\
 ## 4-10 - Numero progressivo: stesso valore omonimo campo del record 14
 ${num_progr}\
 ## Descrizione del creditore (4 segmenti da 24 caratteri)
-##     11-34 - Descrizione del creditore: primo segmento, testo libero
-##     35-58 - Descrizione del creditore: secondo segmento, testo libero
-##     59-82 - Descrizione del creditore: terzo segmento, testo libero
-##     83-106 - Descrizione del creditore: quarto segmento, testo libero
-${doc.creditor_company_name                | f_creditor_descr}\
-${doc.creditor_company_addr_street         | f_creditor_descr}\
-${doc.creditor_company_addr_zip_city_state | f_creditor_descr}\
-${doc.creditor_fiscode_or_vat              | f_creditor_fiscode}\
+##     11-34  - Descrizione del creditore: primo segmento, testo libero   -> Company name
+##     35-58  - Descrizione del creditore: secondo segmento, testo libero -> Street
+##     59-82  - Descrizione del creditore: terzo segmento, testo libero   -> "zip city state" with city trimmed to 15 chars
+##     83-106 - Descrizione del creditore: quarto segmento, testo libero  -> fiscal code
+${doc.creditor_company_name        | f_creditor_descr}\
+${doc.creditor_company_addr_street | f_creditor_descr}\
+${doc.creditor_company_addr_zip    | f_creditor_zip}\
+${BLANK_CHAR}\
+${doc.creditor_company_addr_city   | f_creditor_city}\
+${BLANK_CHAR}\
+${doc.creditor_company_addr_state  | f_creditor_state}\
+${doc.creditor_fiscode_or_vat      | f_creditor_fiscode}\
 ## - - - - - - - - - -
 ## 107-120 - Filler
 ${BLANK_CHAR * fldsz(107, 120)}\

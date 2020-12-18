@@ -184,7 +184,7 @@ class CBIFormatValidator:
     
     def _check_records_length(self):
         for r in self._records:
-            assert len(r) == CBI_RECORD_LENGTH
+            assert len(r) == CBI_RECORD_LENGTH, f'detected length: {len(r)} ----{r}----'
     # end _check_records_length
     
     def _check_ib(self):
