@@ -2,7 +2,7 @@ from pathlib import Path
 import importlib.resources
 import json
 
-from .fakes import BankFake, BankAccountFake, InvoiceFake, MoveLineFake, PartnerFake, CompanyFake
+from .fakes import BankAccountFake, InvoiceFake, MoveLineFake, PartnerFake, CompanyFake
 
 
 TEST_DATA_PACKAGE = 'tests.data'
@@ -31,7 +31,7 @@ class FakeData:
         self.receipts = [
             {
                 'debtor_partner': PartnerFake(**rcpt['debtor_partner']),
-                'debtor_bank': BankFake(**rcpt['debtor_bank']),
+                'debtor_bank_account': BankAccountFake(**rcpt['debtor_bank_account']),
                 'invoice': InvoiceFake(**rcpt['invoice']),
                 'duedate_move_line': MoveLineFake(**rcpt['duedate_move_line']),
             }

@@ -2,21 +2,11 @@ import dateutil.parser
 from types import SimpleNamespace
 
 
-class BankFake:
-    def __init__(self, abi, cab, bank_name=''):
-        self.name = bank_name
-        self.abi = abi
-        self.cab = cab
-    # end init
-
-
-# end BankFake
-
 class BankAccountFake:
-    def __init__(self, abi, cab, number):
-        self.sanitized_acc_number = number
-        self.bank_abi = abi
-        self.bank_cab = cab
+    def __init__(self, bank_name, iban):
+        self.bank_name = bank_name
+        self.acc_number = iban
+        self.sanitized_acc_number = self.acc_number.replace(' ', '').upper()
     # end init
 
 

@@ -173,6 +173,9 @@ def test_validate_duedate():
 
 def test_validate_sia():
     
+    # '00000' must be accepted as sia code
+    validate_sia('00000')
+    
     with pytest.raises(SIAMissingError):
         validate_sia('')
     # end with
@@ -183,10 +186,6 @@ def test_validate_sia():
 
     with pytest.raises(SIAMissingError):
         validate_sia(False)
-    # end with
-
-    with pytest.raises(SIAInvalidError):
-        validate_sia('00000')
     # end with
 
     with pytest.raises(SIAInvalidError):

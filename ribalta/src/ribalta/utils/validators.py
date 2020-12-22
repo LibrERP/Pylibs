@@ -216,8 +216,8 @@ def validate_sia(sia_code: typing.Union[str, bool, None]) -> None:
     elif not len(sia_code) == 5:
         raise SIAInvalidError(
             'Codice SIA errato: il codice deve essere di lunghezza 5')
-
-    elif not sia_code[0].isalpha():
+    
+    elif sia_code != '00000' and not sia_code[0].isalpha():  # NB: '00000' is accepted as SIA code
         raise SIAInvalidError(
             'Codice SIA errato: il primo componente deve essere una lettera')
 

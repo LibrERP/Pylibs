@@ -31,11 +31,6 @@ class ABITypeError(UserError):
 # end ABITypeError
 
 
-class PartnerBankMissing(UserError):
-    pass
-# end PartnerBankMissing
-
-
 class CABMissingError(UserError):
     pass
 # end CABMissingError

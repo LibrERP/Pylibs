@@ -5,7 +5,7 @@ import importlib.resources
 import typing
 from mako.template import Template
 
-from .utils.errors import FiscalcodeMissingError, PartnerBankMissing
+from .utils.errors import FiscalcodeMissingError
 from .utils.odoo_stuff import _
 from .utils.validators import (
     validate_abi,
@@ -32,11 +32,11 @@ class Receipt:
     :type invoice: class:`account.invoice`
     :param debtor_partner: Odoo object holding the name and address of the debtor
     :type debtor_partner: class:`res.partner`
-    :param debtor_bank: Odoo object holding the name and address of the debtor's bank
-    :type debtor_bank: class:`res.bank`
+    :param debtor_bank_account: Odoo object holding the details about the debtor's bank and account
+    :type debtor_bank_account: class:`res.partner.bank`
     """
 
-    def __init__(self, duedate_move_line, invoice, debtor_partner, debtor_bank):
+    def __init__(self, duedate_move_line, invoice, debtor_partner, debtor_bank_account):
 
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         # Fields initialization
@@ -45,23 +45,22 @@ class Receipt:
         self._duedate_move_line = duedate_move_line
         self._invoice = invoice
         self._debtor_partner = debtor_partner
-        self._debtor_bank = debtor_bank
+        self._debtor_bank_account = debtor_bank_account
 
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         # Sanity checks
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
         # CAB and ABI required
-        if not self._debtor_bank:
-            raise PartnerBankMissing(
-                f'No bank specified for {self.debtor_name}'
-            )
-        # end if
-        abi = self.debtor_bank.abi
-        cab = self.debtor_bank.cab
+        debtor_iban = self._debtor_bank_account.sanitized_acc_number.replace(
+            ' ', ''
+        ).upper()
+        
+        self._debtor_bank_abi = debtor_iban[5:10]
+        self._debtor_bank_cab = debtor_iban[10:15]
 
-        validate_abi(abi, self.debtor_name)
-        validate_cab(cab, self.debtor_name)
+        validate_abi(self.debtor_bank_abi, self.debtor_name)
+        validate_cab(self.debtor_bank_cab, self.debtor_name)
 
         # Fiscal code required
         if not self.debtor_fiscalcode:
@@ -149,8 +148,18 @@ class Receipt:
     # end debtor_zip
 
     @property
-    def debtor_bank(self):
-        return self._debtor_bank
+    def debtor_bank_abi(self):
+        return self._debtor_bank_abi
+    # end debtor_bank
+
+    @property
+    def debtor_bank_cab(self):
+        return self._debtor_bank_cab
+    # end debtor_bank
+
+    @property
+    def debtor_bank_name(self):
+        return self._debtor_bank_account.bank_name
     # end debtor_bank
 
     @property
@@ -180,8 +189,8 @@ class Receipt:
         
         return (
             str(self.debtor_partner.id),
-            str(self._debtor_bank.abi),
-            str(self._debtor_bank.cab),
+            str(self.debtor_bank_abi),
+            str(self.debtor_bank_cab),
             self.duedate
         )
     # end gkey
@@ -313,10 +322,20 @@ class ReceiptGroup:
     def debtor_zip(self):
         return self._r_ref.debtor_zip
     # end debtor_zip
+    
+    @property
+    def debtor_bank_abi(self):
+        return self._r_ref.debtor_bank_abi
+    # end debtor_bank
 
     @property
-    def debtor_bank(self):
-        return self._r_ref.debtor_bank
+    def debtor_bank_cab(self):
+        return self._r_ref.debtor_bank_cab
+    # end debtor_bank
+
+    @property
+    def debtor_bank_name(self):
+        return self._r_ref.debtor_bank_name
     # end debtor_bank
 
     @property
@@ -370,15 +389,18 @@ class Document:
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
         # CAB and ABI required
-        abi = self.creditor_bank_account.bank_abi
-        cab = self.creditor_bank_account.bank_cab
+        creditor_iban = self._creditor_bank_account.sanitized_acc_number.replace(
+            ' ', ''
+        ).upper()
 
-        validate_abi(abi, self.creditor_company_name)
-        validate_cab(cab, self.creditor_company_name)
+        self._creditor_bank_abi = creditor_iban[5:10]
+        self._creditor_bank_cab = creditor_iban[10:15]
+        self._creditor_bank_acc = creditor_iban[-12:]
 
-        validate_bank_account_number(
-            self.creditor_bank_account.sanitized_acc_number
-        )
+        validate_abi(self.creditor_bank_abi, self.creditor_company_name)
+        validate_cab(self.creditor_bank_abi, self.creditor_company_name)
+
+        validate_bank_account_number(self._creditor_bank_acc)
 
         validate_sia(self.sia_code)
 
@@ -463,8 +485,23 @@ class Document:
     # end creditor_company
 
     @property
-    def creditor_bank_account(self):
-        return self._creditor_bank_account
+    def creditor_bank_acc(self):
+        return self._creditor_bank_acc
+    # end creditor_bank_account
+
+    @property
+    def creditor_bank_abi(self):
+        return self._creditor_bank_abi
+    # end creditor_bank_account
+
+    @property
+    def creditor_bank_cab(self):
+        return self._creditor_bank_cab
+    # end creditor_bank_account
+
+    @property
+    def creditor_bank_name(self):
+        return self._creditor_bank_account.bank_name
     # end creditor_bank_account
 
     @property

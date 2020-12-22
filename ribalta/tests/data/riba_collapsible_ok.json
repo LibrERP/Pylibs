@@ -15,9 +15,8 @@
   },
 
   "creditor_bank_account": {
-    "abi": "08982",
-    "cab": "62680",
-    "number": "222244446666"
+    "bank_name": "Banca Adria Colli Euganei",
+    "iban": "IT31Z0898262680000022224466"
   },
 
   "receipts": [
@@ -34,10 +33,9 @@
         "zip": "35121",
         "state_id": {"code": "PD"}
       },
-      "debtor_bank": {
+      "debtor_bank_account": {
         "bank_name": "Banca Etica",
-        "abi": "05018",
-        "cab": "12101"
+        "iban": "IT52 X050 1812 1011 2345 0054 321"
       },
       "invoice": {
         "number": "FATT/2020/0150",
@@ -61,10 +59,9 @@
         "zip": "35139",
         "state_id": {"code": "PD"}
       },
-      "debtor_bank": {
+      "debtor_bank_account": {
         "bank_name": "Banca Montepaschi",
-        "abi": "01030",
-        "cab": "12157"
+        "iban": "IT41K0103012157000012341234"
       },
       "invoice": {
         "number": "FATT/2020/0189",
@@ -88,10 +85,9 @@
         "zip": "35121",
         "state_id": {"code": "PD"}
       },
-      "debtor_bank": {
+      "debtor_bank_account": {
         "bank_name": "Banca Etica",
-        "abi": "05018",
-        "cab": "12101"
+        "iban": "IT52 X050 1812 1011 2345 0054 321"
       },
       "invoice": {
         "number": "FATT/2020/0069",
@@ -115,10 +111,9 @@
         "zip": "35121",
         "state_id": {"code": "PD"}
       },
-      "debtor_bank": {
+      "debtor_bank_account": {
         "bank_name": "Banca Etica",
-        "abi": "05018",
-        "cab": "12101"
+        "iban": "IT52 X050 1812 1011 2345 0054 321"
       },
       "invoice": {
         "number": "FATT/2020/0069",
@@ -142,10 +137,9 @@
         "zip": "35121",
         "state_id": {"code": "PD"}
       },
-      "debtor_bank": {
+      "debtor_bank_account": {
         "bank_name": "Banca Etica",
-        "abi": "05018",
-        "cab": "12101"
+        "iban": "IT52 X050 1812 1011 2345 0054 321"
       },
       "invoice": {
         "number": "FATT/2020/0069",
@@ -169,10 +163,9 @@
         "zip": "35121",
         "state_id": {"code": "PD"}
       },
-      "debtor_bank": {
+      "debtor_bank_account": {
         "bank_name": "Banca Etica",
-        "abi": "05018",
-        "cab": "12101"
+        "iban": "IT52 X050 1812 1011 2345 0054 321"
       },
       "invoice": {
         "number": "FATT/2020/0150",
@@ -196,10 +189,9 @@
         "zip": "35139",
         "state_id": {"code": "PD"}
       },
-      "debtor_bank": {
+      "debtor_bank_account": {
         "bank_name": "Banca Montepaschi",
-        "abi": "01030",
-        "cab": "12157"
+        "iban": "IT41K0103012157000012341234"
       },
       "invoice": {
         "number": "FATT/2020/0189",
@@ -223,10 +215,9 @@
         "zip": "35139",
         "state_id": {"code": "PD"}
       },
-      "debtor_bank": {
+      "debtor_bank_account": {
         "bank_name": "Banca Montepaschi",
-        "abi": "01030",
-        "cab": "12157"
+        "iban": "IT41K0103012157000012341234"
       },
       "invoice": {
         "number": "FATT/2020/0186",
@@ -250,10 +241,9 @@
         "zip": "35139",
         "state_id": {"code": "PD"}
       },
-      "debtor_bank": {
+      "debtor_bank_account": {
         "bank_name": "Banca Montepaschi",
-        "abi": "01030",
-        "cab": "12157"
+        "iban": "IT41K0103012157000012341234"
       },
       "invoice": {
         "number": "FATT/2020/0189",
@@ -277,10 +267,9 @@
         "zip": "35121",
         "state_id": {"code": "PD"}
       },
-      "debtor_bank": {
+      "debtor_bank_account": {
         "bank_name": "Banca Etica",
-        "abi": "05018",
-        "cab": "12101"
+        "iban": "IT52 X050 1812 1011 2345 0054 321"
       },
       "invoice": {
         "number": "FATT/2020/0030",
@@ -304,10 +293,9 @@
         "zip": "35139",
         "state_id": {"code": "PD"}
       },
-      "debtor_bank": {
+      "debtor_bank_account": {
         "bank_name": "Banca Montepaschi",
-        "abi": "01030",
-        "cab": "12157"
+        "iban": "IT41K0103012157000012341234"
       },
       "invoice": {
         "number": "FATT/2020/0032",

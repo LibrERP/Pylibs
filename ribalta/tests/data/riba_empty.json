@@ -13,10 +13,9 @@
     },
     "sia_code": ""
   },
-  "creditor_bank_account": {
-    "abi": "",
-    "cab": "",
-    "number": ""
+ "creditor_bank_account": {
+    "bank_name": "",
+    "iban": ""
   },
   
   "receipts": [
@@ -43,10 +42,9 @@
           "code": ""
         }
       },
-      "debtor_bank": {
+      "debtor_bank_account": {
         "bank_name": "",
-        "abi": "",
-        "cab": ""
+        "iban": ""
       }
     },
     
@@ -72,10 +70,9 @@
           "code": ""
         }
       },
-      "debtor_bank": {
+      "debtor_bank_account": {
         "bank_name": "",
-        "abi": "",
-        "cab": ""
+        "iban": ""
       }
     }
   ]

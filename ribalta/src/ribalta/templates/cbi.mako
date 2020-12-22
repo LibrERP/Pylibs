@@ -62,7 +62,7 @@
             i_date = receipt.invoice_date
             i_amount = receipt.amount
 
-            msg = unidecode(f'PER LA FATTURA N. {i_num} DEL {i_date:%d/%m/%Y} IMP {i_amount}')
+            msg = unidecode(f'FATT. {i_num} DEL {i_date:%d/%m/%Y} IMP {i_amount}')
 
         # end if
 
@@ -114,6 +114,7 @@
     f_ljust15 = lambda content: f_ljust_and_trim(content, 15, ' ')
     f_ljust16 = lambda content: f_ljust_and_trim(content, 16, ' ')
     f_ljust20 = lambda content: f_ljust_and_trim(content, 20, ' ')
+    f_ljust22 = lambda content: f_ljust_and_trim(content, 22, ' ')
     f_ljust24 = lambda content: f_ljust_and_trim(content, 24, ' ')
     f_ljust25 = lambda content: f_ljust_and_trim(content, 25, ' ')
     f_ljust30 = lambda content: f_ljust_and_trim(content, 30, ' ')
@@ -158,7 +159,7 @@ ${R_IB_START}\
 ## 4-8 - Mittente: codice SIA dell'azienda mittente
 ${doc.sia_code | f_sia}\
 ## 9-13 - Ricevente: ABI banca assuntrice
-${doc.creditor_bank_account.bank_abi | f_abi}\
+${doc.creditor_bank_abi | f_abi}\
 ## 14-19 - Data creazione: data creazione del flusso da parte dell'azienda (GGMMAA)
 ${doc.creation_date.strftime('%d%m%y')}\
 ## 20-39 - Nome supporto: composizione libera, ma deve essere univoco nell'ambito della data di creazione a parità di mittente e ricevente
@@ -218,15 +219,15 @@ ${line.amount | f_amount_line}\
 ##     48-52 - ABI assuntrice
 ##     53-57 - CAB assuntrice
 ##     58-69 - Numero di conto
-${doc.creditor_bank_account.bank_abi | f_abi}\
-${doc.creditor_bank_account.bank_cab | f_cab}\
-${doc.creditor_bank_account.sanitized_acc_number | f_acct_num}\
+${doc.creditor_bank_abi | f_abi}\
+${doc.creditor_bank_cab | f_cab}\
+${doc.creditor_bank_acc | f_acct_num}\
 ## - - - - - - - - - -
 ## Coordinate banca domiciliataria
 ##     70-74 - ABI domiciliataria
 ##     75-79 - CAB domiciliataria
-${line.debtor_bank.abi | f_abi}\
-${line.debtor_bank.cab | f_cab}\
+${line.debtor_bank_abi | f_abi}\
+${line.debtor_bank_cab | f_cab}\
 ## - - - - - - - - - -
 ## 80-91 - Filler
 ${BLANK_CHAR * fldsz(80, 91)}\
@@ -314,8 +315,8 @@ ${num_progr}\
 ##     71-120 - Banca/sportello domiciliataria: eventuale denominazione in chiaro della banca/sportello domiciliataria/o
 ${line.debtor_address | f_unidecode,f_ljust30}\
 ${line.debtor_zip | f_zip_code}\
-${f'{line.debtor_city} {line.debtor_state}' | f_ljust25}\
-${(line.debtor_bank.name or '') | f_ljust50}\
+${f'{line.debtor_city}' | f_ljust22} ${f'{line.debtor_state}'.rjust(2, ' ')}\
+${(line.debtor_bank_name or '') | f_ljust50}\
 ## - - - - - - - - - -
 ${R_END}
 ##
@@ -411,7 +412,7 @@ ${R_EF_START}\
 ## 4-8 - UGUALE A CAMPO CORRISPONDENTE NEL RECORD ' IB' -> Mittente: codice SIA dell'azienda mittente
 ${doc.sia_code| f_sia}\
 ## 9-13 - UGUALE A CAMPO CORRISPONDENTE NEL RECORD ' IB' -> Ricevente: ABI banca assuntrice
-${doc.creditor_bank_account.bank_abi | f_abi}\
+${doc.creditor_bank_abi | f_abi}\
 ## 14-19 - UGUALE A CAMPO CORRISPONDENTE NEL RECORD ' IB' -> Data creazione: data creazione del flusso da parte dell'azienda (GGMMAA)
 ${doc.creation_date.strftime('%d%m%y')}\
 ## 20-39 - UGUALE A CAMPO CORRISPONDENTE NEL RECORD ' IB' -> Nome supporto: composizione libera, ma deve essere univoco nell'ambito della data di creazione a parità di mittente e ricevente
