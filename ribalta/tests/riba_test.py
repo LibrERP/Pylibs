@@ -19,24 +19,3 @@ def test_cred_errors():
     # end with
     
 # end test_cred_errors
-
-
-def test_debt_errors():
-    
-    with pytest.raises(FiscalcodeMissingError):
-        test_data = FakeData.build_from_test_data('riba_debt_fiscode_false')
-        riba_doc = Document(**test_data.head)
-        for rcpt in test_data.receipts:
-            riba_doc.add_receipt(Receipt(**rcpt))
-        # end for
-    # end with
-    
-    with pytest.raises(FiscalcodeMissingError):
-        test_data = FakeData.build_from_test_data('riba_debt_fiscode_empty_str')
-        riba_doc = Document(**test_data.head)
-        for rcpt in test_data.receipts:
-            riba_doc.add_receipt(Receipt(**rcpt))
-        # end for
-    # end with
-    
-# end test_cred_errors

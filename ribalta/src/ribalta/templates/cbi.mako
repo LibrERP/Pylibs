@@ -291,7 +291,7 @@ ${num_progr}\
 ##     11-40 + 41-70 - Descrizione del debitore: due segmenti da 30 caratteri accorpati
 ##     41-70 - Codifica fiscale: codice fiscale cliente debitore
 ${line.debtor_name | f_ljust60}\
-${line.debtor_fiscalcode | f_fiscode}\
+${line.debtor_fiscode_or_vat | f_fiscode}\
 ## - - - - - - - - - -
 ## 87-120 - Filler
 ${BLANK_CHAR * fldsz(87, 120)}\

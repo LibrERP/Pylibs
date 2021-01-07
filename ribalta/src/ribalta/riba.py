@@ -1,4 +1,5 @@
 import itertools
+import re
 from datetime import datetime, date
 import importlib.resources
 
@@ -63,9 +64,14 @@ class Receipt:
         validate_cab(self.debtor_bank_cab, self.debtor_name)
 
         # Fiscal code required
-        if not self.debtor_fiscalcode:
+        if not self.debtor_fiscode_or_vat:
             raise FiscalcodeMissingError(
-                _('Fiscal Code not specified for ') + self.debtor_name
+                _(
+                    'No Fiscal Code nor VAT number specified for '
+                    f'{self.debtor_name} '
+                    'At least one between Fiscal Code and VAT'
+                    'must be set.'
+                )
             )
         # end if
 
@@ -120,7 +126,7 @@ class Receipt:
 
     @property
     def debtor_fiscode_or_vat(self):
-        return self.debtor_fiscalcode or self.debtor_vat_number
+        return self.debtor_fiscalcode or re.sub('^IT', '', self.debtor_vat_number)
     # end debtor_fiscode_or_vat
 
     @property
