@@ -193,19 +193,7 @@ def test_validate_sia():
     # end with
 
     with pytest.raises(SIAInvalidError):
-        validate_sia('88256')
-    # end with
-
-    with pytest.raises(SIAInvalidError):
         validate_sia('2aA56')
-    # end with
-
-    with pytest.raises(SIAInvalidError):
-        validate_sia('AA356')
-    # end with
-
-    with pytest.raises(SIAInvalidError):
-        validate_sia('3536F')
     # end with
 
     with pytest.raises(SIAInvalidError):
@@ -229,7 +217,10 @@ def test_validate_sia():
     # end with
 
     validate_sia('T4555')
-    validate_sia('z0092')
+    validate_sia('Z0092')
+    validate_sia('30092')
+    validate_sia('AOIT9')
+    validate_sia('AOITX')
 
 # end test_validate_sia
 
