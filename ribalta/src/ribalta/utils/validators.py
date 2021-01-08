@@ -1,3 +1,4 @@
+import re
 import typing
 from datetime import date, timedelta
 
@@ -217,13 +218,9 @@ def validate_sia(sia_code: typing.Union[str, bool, None]) -> None:
         raise SIAInvalidError(
             'Codice SIA errato: il codice deve essere di lunghezza 5')
     
-    elif sia_code != '00000' and not sia_code[0].isalpha():  # NB: '00000' is accepted as SIA code
+    elif not re.match(r'[A-Z0-9]{5}', sia_code):
         raise SIAInvalidError(
-            'Codice SIA errato: il primo componente deve essere una lettera')
-
-    elif not sia_code[1:].isnumeric():
-        raise SIAInvalidError(
-            'Codice SIA errato: gli ultimi 4 componenti devono essee numeri')
+            'Codice SIA errato: il codice può contenere solo lettere maiuscole e cifre')
 
     else:
         # Codice SIA OK
