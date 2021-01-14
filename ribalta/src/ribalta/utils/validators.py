@@ -26,21 +26,21 @@ def validate_abi(abi: typing.Union[str, int, bool, None], nome_soggetto: str):
     elif isinstance(abi, str):
         if not abi.isnumeric():
             raise ABIInvalidError(
-                f'Codice ABI errato per "{nome_soggetto}".'
+                f'Codice ABI ({abi}) errato per "{nome_soggetto}".'
                 f' - '
                 f'Il codice ABI deve essere un numero di 5 cifre'
             )
 
         elif not len(abi) == 5:
             raise ABIInvalidError(
-                f'Codice ABI errato per "{nome_soggetto}".'
+                f'Codice ABI ({abi}) errato per "{nome_soggetto}".'
                 f' - '
                 f'Il codice ABI deve essere un numero di 5 cifre'
             )
 
         elif int(abi) == 0:
             raise ABIInvalidError(
-                f'Codice ABI errato per "{nome_soggetto}".'
+                f'Codice ABI ({abi}) errato per "{nome_soggetto}".'
                 f' - '
                 f'Il codice ABI non può essere composto da 5 zeri (00000)')
 
@@ -74,21 +74,21 @@ def validate_cab(cab: typing.Union[str, int, bool, None], nome_soggetto: str):
     elif isinstance(cab, str):
         if not cab.isnumeric():
             raise CABInvalidError(
-                f'Codice CAB errato per "{nome_soggetto}".'
+                f'Codice CAB ({cab}) errato per "{nome_soggetto}".'
                 f' - '
                 f'Il codice CAB deve essere un numero di 5 cifre'
             )
 
         elif not len(cab) == 5:
             raise CABInvalidError(
-                f'Codice CAB errato per "{nome_soggetto}".'
+                f'Codice CAB ({cab}) errato per "{nome_soggetto}".'
                 f' - '
                 f'Il codice CAB deve essere un numero di 5 cifre'
             )
 
         elif int(cab) == 0:
             raise CABInvalidError(
-                f'Codice CAB errato per "{nome_soggetto}".'
+                f'Codice CAB ({cab}) errato per "{nome_soggetto}".'
                 f' - '
                 f'Il codice CAB non può essere composto da 5 zeri (00000)')
 
