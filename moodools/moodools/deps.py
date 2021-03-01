@@ -43,14 +43,20 @@ class DepGraphBuilder:
         for mod_name, mod_manifest in manifests_by_module.items():
 
             deps_list = mod_manifest.get('depends', list())
-            deps_list_filtered = filter(
+            deps_list_filtered = list(filter(
                 lambda d: d in manifests_by_module,
                 deps_list
-            )
+            ))
 
-            for dep_name in deps_list_filtered:
-                dg.edge(mod_name, dep_name)
-            # end for
+            if deps_list_filtered:
+                for dep_name in deps_list_filtered:
+                    dg.edge(mod_name, dep_name)
+                # end for
+
+            else:
+                dg.node(mod_name)
+
+            # end if
 
         # end for
 
