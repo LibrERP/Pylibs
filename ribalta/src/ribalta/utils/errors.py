@@ -66,6 +66,11 @@ class FiscalcodeMissingError(UserError):
 # end CABTypeError
 
 
+class FiscalcodeAndVATMissingError(UserError):
+    pass
+# end CABTypeError
+
+
 class SIAMissingError(UserError):
     pass
 # end SIAMissingError

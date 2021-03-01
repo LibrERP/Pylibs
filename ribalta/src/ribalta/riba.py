@@ -6,7 +6,7 @@ import importlib.resources
 import typing
 from mako.template import Template
 
-from .utils.errors import FiscalcodeMissingError
+from .utils.errors import FiscalcodeMissingError, FiscalcodeAndVATMissingError
 from .utils.odoo_stuff import _
 from .utils.validators import (
     validate_abi,
@@ -126,6 +126,11 @@ class Receipt:
 
     @property
     def debtor_fiscode_or_vat(self):
+        if not self.debtor_fiscalcode and not self.debtor_vat_number:
+            raise FiscalcodeAndVATMissingError(
+                f'Fiscalcode and VAT missing for debtor {self.debtor_name}'
+            )
+        # end if
         return self.debtor_fiscalcode or re.sub('^IT', '', self.debtor_vat_number)
     # end debtor_fiscode_or_vat
 
