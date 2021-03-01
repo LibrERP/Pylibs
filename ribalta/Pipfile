@@ -8,6 +8,7 @@ mako = "*"
 
 [dev-packages]
 flit = "*"
+python-dateutil = "*"
 
 [requires]
 python_version = "3.8"
