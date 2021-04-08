@@ -1,0 +1,43 @@
+[build-system]
+requires=["flit_core >=2,<4"]
+build-backend="flit_core.buildapi"
+
+[tool.flit.metadata]
+module="moodools"
+author="Marco Tosato"
+author-email="marco.tosato@didotech.com"
+home-page='https://github.com/LibrERP/Pylibs/'
+requires=[
+    'graphviz >=0.13',
+]
+requires-python=">= 3.6"
+description-file="README.md"
+classifiers=[
+    'Programming Language :: Python :: 3',
+    'Operating System :: OS Independent',
+    'Development Status :: 5 - Production/Stable',
+    'License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)',
+    'Framework :: Odoo',
+]
+
+[tool.flit.metadata.requires-extra]
+test = [
+    "pytest >=2.7.3",
+    "pytest-cov",
+    "python-dateutil",
+]
+
+doc = []
+
+dev = []
+
+[tool.flit.sdist]
+include = [
+    "src/"
+]
+exclude = [
+    "doc/",
+    "tests/",
+    "Pipfile",
+]
+
