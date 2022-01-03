@@ -179,6 +179,6 @@ class Tasker:
             raise TaskError(procs)  # Raise an error
         # end if
         
-    # end _get_paralle_producer
+    # end _build_parallel_producer
 
 # end Tasker
