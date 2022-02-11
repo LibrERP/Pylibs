@@ -1,6 +1,5 @@
-from .base import AbstractPage, MenuItem
-from .fake import FakePage
-from . import ordini_lidl
+from av2000_terminator.navigation.base import AbstractPage, MenuItem, FakePage
+from . import lidl
 
 
 class MainMenu(AbstractPage):
@@ -10,7 +9,7 @@ class MainMenu(AbstractPage):
     _MENU_ITEMS = {
         1: MenuItem('Causali ordini Clienti', FakePage),
         3: MenuItem('Import ordini da EDI', FakePage),
-        4: MenuItem('Import ordini da xls Lidl', ordini_lidl.MainMenu),
+        4: MenuItem('Import ordini da xls Lidl', lidl.MainMenu),
         6: MenuItem('Import ordini da EDI nuovo', FakePage),
         9: MenuItem('Manutenzione ordini Clienti', FakePage),
         14: MenuItem('Ordini di carico Terrossa', FakePage),

@@ -1,6 +1,5 @@
 from av2000_terminator.misc import keys
-from . base import AbstractPage, MenuItem
-from . fake import FakePage
+from av2000_terminator.navigation.base import AbstractPage, MenuItem, FakePage
 from . import contabilita
 from . import magazzino_vendite_acquisti
 

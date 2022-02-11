@@ -1,5 +1,4 @@
-from . base import AbstractPage, MenuItem
-from . fake import FakePage
+from av2000_terminator.navigation.base import AbstractPage, MenuItem, FakePage
 from . anagrafiche import AnagraficaClienti, AnagraficaFornitori
 
 
@@ -65,9 +64,7 @@ class MainMenu(AbstractPage):
     
     @property
     def name(self):
-        """
-        Returns the name of the current page
-        """
+        """Returns the name of the current page"""
         return self._av2000.display_lines[0][10:].strip()
     # end name
     

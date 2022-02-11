@@ -1,9 +1,8 @@
 from av2000_terminator.misc import keys
 import time
 
-from .base import AbstractPage, MenuItem
-from .fake import FakePage
-from av2000_terminator.misc.exceptions import LoadingTimeout, NoNextPage
+from av2000_terminator.navigation.base import AbstractPage, MenuItem, FakePage
+from av2000_terminator.misc.exceptions import NoNextPage
 
 _TABLE_LIMIT = ('q' * 80, '-' * 80)
 

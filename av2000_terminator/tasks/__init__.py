@@ -1,1 +1,1 @@
-from . suppliers_downloader import SuppliersDownloadTask 
+from . import anagrafiche, lidl

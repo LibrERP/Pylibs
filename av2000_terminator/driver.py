@@ -1,5 +1,7 @@
 from copy import deepcopy
 import datetime
+import logging
+import multiprocessing
 import re
 import time
 import typing
@@ -9,7 +11,7 @@ from paramiko import SSHClient
 from sshterminal import SSHTerminal
 
 from . misc import keys, ConnectionParams
-from . misc.exceptions import DriverClosed, LoadingTimeout, TaskError
+from . misc.exceptions import DriverClosed, LoadingTimeout
 
 
 def ensure_open(method):
@@ -43,6 +45,8 @@ class AV2000Driver:
     RETURN_CHAR = '\r'
     
     def __init__(self, connection_params: ConnectionParams):
+
+
         
         self._connection_params = connection_params
         cp = self._connection_params

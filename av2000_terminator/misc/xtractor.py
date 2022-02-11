@@ -1,12 +1,13 @@
 import typing
 
+
 class Xtractor:
     
     def __init__(self, lines_list: typing.List[str]):
         self._lines = lines_list
     # end lines
     
-    def x(self, line_num: int, index: typing.Union[typing.Tuple[int], int], to_type=str):
+    def x(self, line_num: int, index: typing.Union[typing.Tuple[int, int], int], to_type=str):
         
         line = self._lines[line_num]
         
@@ -19,7 +20,7 @@ class Xtractor:
                 raise ValueError('When "index" is a list/tuple it must be of length 2')
             # end if
         else:
-            TypeError('Index must be str or a tuple/list with 2 elements')
+            raise TypeError('Index must be str or a tuple/list with 2 elements')
         # end if
         
         portion_strip = portion.strip()

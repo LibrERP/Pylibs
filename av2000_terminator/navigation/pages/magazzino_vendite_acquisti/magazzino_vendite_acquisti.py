@@ -1,5 +1,4 @@
-from .base import AbstractPage, MenuItem
-from .fake import FakePage
+from av2000_terminator.navigation.base import AbstractPage, MenuItem, FakePage
 from . import ordini_clienti
 
 

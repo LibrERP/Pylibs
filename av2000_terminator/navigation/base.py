@@ -1,5 +1,6 @@
 import abc
 from collections import namedtuple
+import time
 import typing
 
 from av2000_terminator.misc import keys
@@ -78,3 +79,19 @@ class AbstractPage(abc.ABC):
     # end back
     
 # end AbstractPage
+
+
+class FakePage(AbstractPage):
+
+    @property
+    def name(self):
+        return 'Fake page controller'
+
+    # end name
+
+    def ready(self):
+        time.sleep(1)
+        return True
+    # end ready
+
+# end FakePage
