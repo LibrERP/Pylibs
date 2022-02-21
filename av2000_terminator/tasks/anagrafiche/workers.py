@@ -1,6 +1,4 @@
 import datetime
-import logging
-import multiprocessing
 
 from av2000_terminator.tasks.base import AbstractWorker
 

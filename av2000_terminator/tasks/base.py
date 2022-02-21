@@ -1,7 +1,6 @@
 import abc
 from collections.abc import Sized
 import logging
-import math
 from multiprocessing import Process, Queue, SimpleQueue
 import queue
 import sys
@@ -36,15 +35,24 @@ class AbstractWorker(abc.ABC, Process):
         self._connection_params = connection_params
         self._queue = q
         self._tasks = tasks
-        # Number fo items downloaded: It's equal to list index of the last downloaded item plus 1.
+        # Number fo items downloaded: it's equal to list index of the last downloaded item plus 1.
         self._fetched_items = 0
         self._iterations_counter = 0
         self._max_retry = max_retry
         self._av2000 = None
         self._navigator = None
         self._exception_queue = SimpleQueue()
-
     # end __init__
+
+    @property
+    def out_queue(self):
+        return self._queue
+    # end queue
+
+    @property
+    def tasks(self):
+        return self._tasks
+    # end queue
 
     def run(self):
 
@@ -94,36 +102,37 @@ class AbstractWorker(abc.ABC, Process):
         else:
             sys.exit(2)
         # end if
-
     # end run
 
     def _max_retry_ok(self):
         return self._iterations_counter < self._max_retry
-
     # end _iterations_ok
 
     def _task_completed(self):
         return len(self._tasks) == self._fetched_items
-
     # end task completed
 
     def _error(self):
         return not self._exception_queue.empty()
-
     # end _error
 
     @abc.abstractmethod
     def _task_loop(self):
         pass
     # end _task_loop
-
-
 # end SuppliersDownloadTask
 
 
 class ParallelProducer:
 
-    def __init__(self, connection_params: ConnectionParams, worker_class, tasks_list: typing.List, procs_num: int = 1):
+    def __init__(
+            self,
+            connection_params: ConnectionParams,
+            worker_class,
+            tasks_list: typing.List,
+            procs_num: int = 1,
+            keep_order: bool = False,
+    ):
 
         # Check params
         if procs_num < 1:
@@ -136,60 +145,88 @@ class ParallelProducer:
         self._procs_num = procs_num
 
         # Split the ids in (more or less even) chunks
-        chunk_s = math.ceil(len(self._tasks_list) / procs_num)
-
-        # Build the queue
-        self._results_queue = Queue(200)
-
-        # Build the tasks
-        self._worker_procs = [
+        self._workers = [
             worker_class(
-                name=f'sd_{p_num}',
+                name=f'sd_{worker_id}',
                 connection_params=connection_params,
-                tasks=tasks_list[chunk_s * p_num:chunk_s * (p_num + 1)],
-                q=self._results_queue,
+                tasks=self._tasks_list[worker_id::procs_num],
+                q=Queue(20),
             )
-            for p_num in range(procs_num)
+            for worker_id in range(procs_num)
         ]
     # end __init__
 
     def stop_workers(self):
-        [p.terminate() for p in self._worker_procs]
+        [wrk.terminate() for wrk in self._workers]
     # end stop_workers
 
     @property
     def workers_alive(self):
-        procs_alive = any(p.is_alive() for p in self._worker_procs)
+        procs_alive = any(wrk.is_alive() for wrk in self._workers)
         return procs_alive
     # end procs_alive
 
     @property
     def workers_error(self):
-        error_detected = any(p.exitcode for p in self._worker_procs)
+        error_detected = any(wrk.exitcode for wrk in self._workers)
         return error_detected
     # end worker_error
 
     def get_next(self):
 
         # Start the tasks
-        [p.start() for p in self._worker_procs]
+        [worker.start() for worker in self._workers]
 
-        # Generator
-        while (self.workers_alive or not self._results_queue.empty()) and not self.workers_error:
+        # Number of batches
+        batches = max([len(worker.tasks) for worker in self._workers])
 
-            try:
-                x = self._results_queue.get(timeout=3)
-                yield x
-            except queue.Empty:
-                # Nothing to do here, just start the next iteration
-                pass
-            # end try / except
-        # end while
+        # For each batch
+        batch_index = 0
+        while not self.workers_error and batch_index < batches:
+
+            # Get the workers involved in this batch
+            workers = [w for w in self._workers if batch_index < len(w.tasks)]
+
+            # Get the batch result for the valid workers
+            batch_results = self._ordered_fetch(workers)
+
+            # Return the result serially
+            for result in batch_results:
+                yield result
+            # end for
+
+            _logger.info(f'Batch {batch_index + 1}/{batches} completed')
+
+            # Update the index
+            batch_index = batch_index + 1
+        # end for
 
         # Error occurred!!
         if self.workers_error:
             self.stop_workers()
-            raise TaskError(self._worker_procs)  # Raise an error
+            raise TaskError(self._workers)  # Raise an error
         # end if
     # end get_next
+
+    def _ordered_fetch(self, workers_list: typing.List[AbstractWorker]) -> typing.List[typing.Any]:
+
+        batch_result = list()
+
+        for worker in workers_list:
+
+            result_fetched = False
+
+            # Retrieve a batch
+            while not self.workers_error and not result_fetched:
+                try:
+                    batch_result.append(worker.out_queue.get(timeout=3))
+                    result_fetched = True
+                except queue.Empty:
+                    pass  # Nothing to do here, just start the next iteration
+                # end try / except
+            # end while
+        # end for
+
+        return batch_result
+    # end _get_batch
 # end ParallelProducer
