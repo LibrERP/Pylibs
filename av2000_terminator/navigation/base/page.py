@@ -1,22 +1,16 @@
 import abc
-from collections import namedtuple
 import time
-import typing
 
-from av2000_terminator.misc import keys
-from av2000_terminator.driver import AV2000Driver
+from sshterminal import keys
 
-
-MenuItem = namedtuple('MenuItem', ['descr', 'page_class'])
+from av2000_terminator.terminal import AV2000Terminal
 
 
 class AbstractPage(abc.ABC):
     
-    _MENU_ITEMS: typing.Dict[str, MenuItem] = dict()
-    
     def __init__(self, navigator: 'Navigator'):
         self._navigator: 'Navigator' = navigator
-        self._av2000: AV2000Driver = navigator.driver
+        self._av2000: AV2000Terminal = navigator.driver
     # end __init__
     
     @property
@@ -47,28 +41,6 @@ class AbstractPage(abc.ABC):
         pass
     # end ready
     
-    @property
-    def menu(self):
-        return {
-            k: v.descr for k, v in self._MENU_ITEMS.items()
-        }
-    # end menu
-    
-    def menu_select(self, item_num: typing.Union[str, int]):
-        
-        selection_int = int(item_num)
-        
-        if selection_int in self._MENU_ITEMS:
-            page_class = self._MENU_ITEMS[selection_int].page_class
-            selection_str = f'{selection_int:02d}'
-            self._av2000.send_line(selection_str)
-            self._navigator.set_current_page(page_class)
-        else:
-            raise ValueError(f'Item {item_num} not found in menu.')
-        # end if
-        
-    # end menu_select
-    
     def wait_loading(self, timeout_sec):
         """Wait for page to be completly loaded"""
         self._av2000.wait_ready(self.ready, timeout_sec)
@@ -77,7 +49,6 @@ class AbstractPage(abc.ABC):
     def back(self):
         self._av2000.send_seq(keys.ESC)
     # end back
-    
 # end AbstractPage
 
 
@@ -86,12 +57,10 @@ class FakePage(AbstractPage):
     @property
     def name(self):
         return 'Fake page controller'
-
     # end name
 
     def ready(self):
         time.sleep(1)
         return True
     # end ready
-
 # end FakePage

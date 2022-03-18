@@ -1,6 +1,7 @@
 import re
 
-from av2000_terminator.misc import keys, Xtractor
+from sshterminal import keys
+from sshterminal.xtractor import Xtractor
 from av2000_terminator.navigation.base import AbstractPage
 
 from . partner import PartnersListPage, PartnersMainPage

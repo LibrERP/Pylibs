@@ -1,8 +1,12 @@
 ESC = '\x1b'
+
 HOME = ESC + '[1~'
 END = ESC + '[4~'
 PG_UP = ESC + '[5~'
 PG_DN = ESC + '[6~'
+
+BACKSPACE = '\x08'
+DELETE = '\x7f'
 
 ARROW = {
     'up': ESC + '[A',
@@ -10,6 +14,10 @@ ARROW = {
     'right': ESC + '[C',
     'left': ESC + '[D',
 }
+
+
+TAB_FWD = '\x09'
+TAB_BACK = '\x1b[Z'
 
 
 # Generate CTRL sequences indexed by letter (both uppercase and lowercase ==> case insensitive)

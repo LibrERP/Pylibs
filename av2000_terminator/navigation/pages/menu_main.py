@@ -1,10 +1,10 @@
-from av2000_terminator.misc import keys
-from av2000_terminator.navigation.base import AbstractPage, MenuItem, FakePage
+from sshterminal import keys
+from av2000_terminator.navigation.base import AbstractMenu, MenuItem, FakePage
 from . import contabilita
 from . import magazzino_vendite_acquisti
 
 
-class MainMenu(AbstractPage):
+class MainMenu(AbstractMenu):
     
     PAGE_NAME = 'AV2000'
     

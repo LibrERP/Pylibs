@@ -1,4 +1,4 @@
-from av2000_terminator.driver import AV2000Driver
+from av2000_terminator.terminal import AV2000Terminal
 from av2000_terminator.navigation import Navigator
 from av2000_terminator.misc import ConnectionParams
 from av2000_terminator.misc.exceptions import NoNextPage
@@ -10,7 +10,7 @@ from av2000_terminator.navigation.pages.magazzino_vendite_acquisti.ordini_client
 def warehouses_info_list(connection_params: ConnectionParams):
 
     # Convinience aliases
-    av2000: AV2000Driver = AV2000Driver(connection_params)
+    av2000: AV2000Terminal = AV2000Terminal(connection_params)
 
     # Get a navigator
     navigator: Navigator = Navigator(av2000)
@@ -47,7 +47,7 @@ def warehouses_info_list(connection_params: ConnectionParams):
 def products_info_list(connection_params: ConnectionParams):
 
     # Convinience aliases
-    av2000: AV2000Driver = AV2000Driver(connection_params)
+    av2000: AV2000Terminal = AV2000Terminal(connection_params)
 
     # Get a navigator
     navigator: Navigator = Navigator(av2000)

@@ -2,9 +2,11 @@ import codecs
 import datetime
 import time
 import typing
+from collections import namedtuple
 
 import pyte
 
+from . import keys
 from .ascii_styler import ASCIIStyler
 
 
@@ -21,7 +23,7 @@ class SSHShell:
         self._ssh_session.invoke_shell()
     # end SSHShell
     
-    def send(self, data: bytes):
+    def send(self, data: bytes) -> None:
         self._ssh_session.send(data)
     # end send
     
@@ -43,26 +45,26 @@ class SSHShell:
             # end if
             
         # end while
-        
     # end recv
     
-    def data_ready(self):
+    def data_ready(self) -> bool:
         return self._ssh_session.recv_ready()
     # end data_ready
 
-    def close(self):
+    def close(self) -> None:
         self._ssh_session.close()
     # end close
 
     @property
-    def closed(self):
+    def closed(self) -> bool:
         return self._ssh_session.closed
     # end close
-    
 # end SSHShell
 
 
 class ScreenManager:
+
+    ScreenSize = namedtuple('ScreenSize', ['lines', 'cols'])
     
     def __init__(self, proxy: 'TerminalComponentsProxy', rows, cols, encoding='utf-8'):
         
@@ -76,22 +78,31 @@ class ScreenManager:
         
         self._screen: pyte.Screen = pyte.Screen(cols, rows)
         self._stream.attach(self._screen)
-        
     # end __init__
     
     @property
-    def encoding(self):
+    def encoding(self) -> str:
         return self._encoding
     # pass encoding
+
+    @property
+    def cursor(self) -> pyte.screens.Cursor:
+        return self._screen.cursor
+    # end cursor
     
     @property
-    def lines(self) -> typing.List[str]:
+    def display_lines(self) -> typing.List[str]:
         """
-        Returns a list containig one string sequence for each row of the screen.
+        Returns a list containing one string sequence for each row of the screen.
         Each row contains the character displayed bu the screen WITHOUT formatting
         """
         return self._screen.display.copy()
     # end lines
+
+    @property
+    def buffer(self):
+        return self._screen.buffer
+    # end buffer
     
     @property
     def modified_lines(self) -> typing.Set[int]:
@@ -104,7 +115,7 @@ class ScreenManager:
         return self._screen.dirty
     # end new_lines
     
-    def print_lines(self, new_line: str = '\n'):
+    def print_lines(self, new_line: str = '\n') -> None:
         """
         Returns a list containing one string sequence for each row of the screen.
         Each row contains the character displayed bu the screen WITHOUT formatting
@@ -112,17 +123,17 @@ class ScreenManager:
         print(new_line.join(self._screen.display))
     # end lines
 
-    def render(self):
+    def render(self, debug=False) -> None:
         """
-        Renders the screen buffer by printing each character in the screen prependind
+        Renders the screen buffer by printing each character in the screen prepending
         by the ascii formatting escape sequence
         """
-        for line in self.styled_ascii():
+        for line in self.styled_ascii(debug=debug):
             print(''.join(line))
         # end for
     # end render
     
-    def update(self):
+    def update(self) -> None:
         """
         Receive data from remote host and update the screen.
         NOTE: calling this method will clear the list of new lines returned by
@@ -136,24 +147,15 @@ class ScreenManager:
         # end while
     # end update
     
-    def reset(self):
+    def reset(self) -> None:
         self._screen.reset()
     # end reset
 
-    def styled_debug(self):
-        """Returns the screen buffer as a tuple for each character with the setted style"""
-        return self._styled(debug=True)
-    # end styled_debug
-
-    def styled_ascii(self) -> typing.List[list]:
+    def styled_ascii(self, debug=False) -> typing.List[list]:
         """
         Returns each character in the screen buffer prepended by the ascii escape sequence
         defining the formatting for the character
         """
-        return self._styled(debug=False)
-    # end styled_ascii
-
-    def _styled(self, debug=False):
 
         lines = list()
         ascii_style_obj = ASCIIStyler()
@@ -165,6 +167,7 @@ class ScreenManager:
         # end if
 
         buffer_copy = self._screen.buffer.copy()
+        cursor = self._screen.cursor
 
         for line in range(self._screen.lines):
 
@@ -172,18 +175,45 @@ class ScreenManager:
 
             for col in range(self._screen.columns):
                 current_char = buffer_copy[line][col]
-                styled_char = styler(current_char)
+
+                # If this is the cursor position apply a special style
+                if line == cursor.y and col == cursor.x:
+
+                    # Set the styler state as if the normal style were used and save it
+                    styler(current_char)
+                    styler_state = ascii_style_obj.state
+
+                    # Style the cursor character
+                    cursor_char = pyte.screens.Char(
+                        data=current_char.data,
+                        fg='cursor',
+                        bg='cursor',
+                        underscore=True,
+                        bold=True,
+                    )
+                    styled_char = styler(cursor_char)
+
+                    # Restore the previous state of the styler
+                    # as if cursor_char were never processed
+                    ascii_style_obj.state = styler_state
+
+                else:
+                    styled_char = styler(current_char)
+                # end if
+
                 current_line.append(styled_char)
             # end for
 
             lines.append(current_line)
-
         # end for
 
         return lines
-        
-    # end _styled
-    
+    # end styled_ascii
+
+    @property
+    def actual_size(self) -> ScreenSize:
+        return self.ScreenSize(lines=self._screen.lines, cols=self._screen.columns)
+    # end actual_size
 # end ScreenManager
 
 
@@ -205,7 +235,7 @@ class InputManager:
         self.line_end = line_end  # Set _line_end through the line_end property
     # end __init__
     
-    def seq(self, data):
+    def seq(self, data) -> None:
         """
             Sanityze data and send to the remote system
             NOTE: calling this function reasults in the screen modified_lines
@@ -215,13 +245,14 @@ class InputManager:
 
         # Sanitize data and send it to the remote system
         sanitized_data = self.sanitize_data(data)
+        #print(f'InputManager.seq - sending "{sanitized_data}"')
         self._proxy.ssh_shell.send(sanitized_data)
         
         # Update the screen with the replay of the remote system
         self._proxy.screen.update()
     # end chars
     
-    def line(self, data=''):
+    def line(self, data='') -> None:
         """
             Sanityze data and send to the remote system followed
             by "line_end" sequence
@@ -240,7 +271,7 @@ class InputManager:
     # end line_end
     
     @line_end.setter
-    def line_end(self, value):
+    def line_end(self, value) -> None:
         """Set the "line_end" sequence"""
         self._line_end = self.sanitize_data(value)
     # end line_end
@@ -256,7 +287,6 @@ class InputManager:
             raise TypeError('"data" must be str or bytes')
         # end if
     # end sanitize_data
-    
 # end InputManager
 
 
@@ -274,7 +304,7 @@ class TerminalComponentsProxy:
     # end ssh_shell
     
     @ssh_shell.setter
-    def ssh_shell(self, ssh_shell: SSHShell):
+    def ssh_shell(self, ssh_shell: SSHShell) -> None:
         self._ssh_shell = ssh_shell
     # end ssh_shell.setter
     
@@ -284,7 +314,7 @@ class TerminalComponentsProxy:
     # end screen
     
     @screen.setter
-    def screen(self, screen_manager: ScreenManager):
+    def screen(self, screen_manager: ScreenManager) -> None:
         self._screen = screen_manager
     # end screen
     
@@ -294,17 +324,118 @@ class TerminalComponentsProxy:
     # end input
     
     @input.setter
-    def input(self, input_manager: InputManager):
+    def input(self, input_manager: InputManager) -> None:
         self._input = input_manager
     # end input
-
 # end TerminalComponentsProxy
+
+
+class Cursor:
+
+    MOVES = {
+        'u': keys.ARROW['up'],
+        'd': keys.ARROW['down'],
+        'l': keys.ARROW['left'],
+        'r': keys.ARROW['right'],
+        't': keys.TAB_FWD,
+        'T': keys.TAB_BACK,
+    }
+
+    CursorPosition = namedtuple('CursorPosition', ['line', 'col'])
+
+    def __init__(self, pyte_cursor: pyte.screens.Cursor, input_manager: InputManager):
+        self._pyte_cursor: pyte.screens.Cursor = pyte_cursor
+        self._input_manager = input_manager
+    # end __init__
+
+    @property
+    def position(self) -> CursorPosition:
+        """Returns current cursor position as (line, col). Index starts from 0."""
+        return self.CursorPosition(
+            line=self._pyte_cursor.y,
+            col=self._pyte_cursor.x
+        )
+    # end position
+
+    @property
+    def x(self) -> int:
+        return self._pyte_cursor.x
+    # end x
+
+    @property
+    def col(self) -> int:
+        return self._pyte_cursor.x
+    # end col
+
+    @property
+    def y(self) -> int:
+        return self._pyte_cursor.y
+    # end y
+
+    @property
+    def line(self) -> int:
+        return self._pyte_cursor.y
+    # end line
+
+    def move(self, where: str) -> None:
+
+        # Verify commands are valid
+        for single_move in where:
+            assert single_move in self.MOVES
+        # end for
+
+        ascii_commands = ''.join(map(lambda x: self.MOVES[x], where))
+        ascii_sequence = ''.join(ascii_commands)
+
+        self._input_manager.seq(ascii_sequence)
+    # end up
+
+    def up(self) -> None:
+        self.move('u')
+    # end up
+
+    def down(self) -> None:
+        self.move('d')
+    # end down
+
+    def left(self) -> None:
+        self.move('l')
+    # end left
+
+    def right(self) -> None:
+        self.move('r')
+    # end right
+
+    def tab_fwd(self) -> None:
+        self.move('t')
+    # end tab_back
+
+    def tab_back(self) -> None:
+        self.move('T')
+    # end tab_back
+
+    def write(self, data: str) -> None:
+        self._input_manager.seq(data)
+    # end write
+
+    def writeln(self, data: str = '') -> None:
+        self._input_manager.line(data)
+    # end writeln
+
+    def delete(self, n: int = 1) -> None:
+        self.write(keys.DELETE * n)
+    # end delete
+
+    def backsp(self, n: int = 1) -> None:
+        self.write(keys.BACKSPACE * n)
+    # end backsp
+# end Cursor
 
 
 class SSHTerminal:
     
     def __init__(
-            self, ssh_connection, rows: int = 25, cols: int = 80, encoding: str = 'utf-8', read_delay_sec: float = 0.05
+        self, ssh_connection, rows: int = 25, cols: int = 80, encoding: str = 'utf-8', read_delay_sec: float = 0.05
     ):
         
         # Initialize components
@@ -332,15 +463,22 @@ class SSHTerminal:
     def input(self) -> InputManager:
         return self._proxy.input
     # end input
+
+    @property
+    def cursor(self) -> Cursor:
+        return Cursor(
+            input_manager=self._proxy.input,
+            pyte_cursor=self._proxy.screen.cursor,
+        )
+    # end cursor
     
     @property
     def closed(self) -> bool:
         return self._proxy.ssh_shell.closed
     # end close
     
-    def close(self):
+    def close(self) -> None:
         self._proxy.ssh_shell.close()
         self._proxy.screen.reset()
     # end close
-    
 # end SSHTerminal

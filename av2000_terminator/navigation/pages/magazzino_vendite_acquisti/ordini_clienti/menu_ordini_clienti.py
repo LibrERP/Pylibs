@@ -1,8 +1,8 @@
-from av2000_terminator.navigation.base import AbstractPage, MenuItem, FakePage
+from av2000_terminator.navigation.base import AbstractMenu, MenuItem, FakePage
 from . import lidl
 
 
-class MainMenu(AbstractPage):
+class MainMenu(AbstractMenu):
 
     PAGE_NAME = 'Ordini Clienti'
 
@@ -25,12 +25,9 @@ class MainMenu(AbstractPage):
     }
 
     def ready(self):
-
         name_ok = self.name == self.PAGE_NAME
         menu_ok = self._av2000.display_lines[18].strip() == '16 Ordini di carico S.Bonifacio (WISE)'
 
         return name_ok and menu_ok
-
     # end ready
-
 # end MainMenu

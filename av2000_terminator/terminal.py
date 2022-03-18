@@ -1,16 +1,16 @@
+import copy
 from copy import deepcopy
 import datetime
-import logging
-import multiprocessing
 import re
 import time
 import typing
 
 from paramiko import SSHClient
 
-from sshterminal import SSHTerminal
+from sshterminal import SSHTerminal, keys
+from sshterminal.ssh_terminal import ScreenManager
 
-from . misc import keys, ConnectionParams
+from . misc import ConnectionParams
 from . misc.exceptions import DriverClosed, LoadingTimeout
 
 
@@ -33,7 +33,7 @@ def ensure_open(method):
 # end ensure_open
 
 
-class AV2000Driver:
+class AV2000Terminal:
     
     SCREEN_COLS = 100
     SCREEN_ROWS = 40
@@ -46,8 +46,6 @@ class AV2000Driver:
     
     def __init__(self, connection_params: ConnectionParams):
 
-
-        
         self._connection_params = connection_params
         cp = self._connection_params
         
@@ -86,7 +84,6 @@ class AV2000Driver:
         self.send_line(str(cp.company_id))
         
         print('Connection ready')
-
     # end __init__
     
     @property
@@ -101,14 +98,17 @@ class AV2000Driver:
     
     @property
     def display_lines(self):
-        return deepcopy(self._terminal.screen.lines)
+        return deepcopy(self._terminal.screen.display_lines)
     # end display_lines
     
     @property
     def text_lines(self):
-        return [
-            ln for ln in self.display_lines if ln.strip()
-        ]
+        return [ln for ln in self.display_lines if ln.strip()]
+    # end text_lines
+
+    @property
+    def terminal_buffer(self):
+        return copy.deepcopy(self._terminal.screen.buffer)
     # end text_lines
     
     def print_lines(self):
@@ -186,7 +186,6 @@ class AV2000Driver:
         
         # Close the connection
         self.close()
-        
     # end exit
     
     @ensure_open
@@ -211,7 +210,7 @@ class AV2000Driver:
     ):
         """
             Wait for something to be ready.
-            The AV2000Driver.update() will be executed at the end of
+            The AV2000Terminal.update() will be executed at the end of
             each iteration so next call of readiness_fn() will find an
             up to date screen.
         """
@@ -232,7 +231,17 @@ class AV2000Driver:
             #     before checking for new data.
             self.update()
         # end
-    
     # end wait_ready
+
+    @property
+    @ensure_open
+    def cursor(self):
+        return self._terminal.cursor
+    # end if
+
+    @property
+    def actual_size(self) -> ScreenManager.ScreenSize:
+        return self._terminal.screen.actual_size
+    # end actual_size
     
-# end AV2000Driver
+# end AV2000Terminal

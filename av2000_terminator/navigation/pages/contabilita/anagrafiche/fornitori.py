@@ -1,9 +1,10 @@
-import datetime
 import re
 import time
+from pathlib import Path
 
-from av2000_terminator.misc import keys, Xtractor
-from av2000_terminator.navigation.base import AbstractPage
+from sshterminal import keys
+from sshterminal.xtractor import Xtractor
+from av2000_terminator.navigation.base import AbstractForm
 
 from .partner import PartnersListPage, PartnersMainPage
 
@@ -16,8 +17,12 @@ class ListaFornitori(PartnersListPage):
 # end ListaFornitori
 
 
-class DettagliFornitore(AbstractPage):
+class DettagliFornitore(AbstractForm):
+
     PAGE_NAME = 'Anagrafica fornitori'
+
+    DATA_FILE_PATH = Path(__file__).parent.resolve() / 'DettagliFornitore.json'
+
     _LAST_DATA_LINE_RE = re.compile(r'^\s*Cognome .*Nome .*% imp calcolo RA \s*')
     _LAST_SCREEN_LINE = 'F7   Invio  Esc  Fine   F3   Note  F6   Collegamenti'
 
@@ -34,7 +39,6 @@ class DettagliFornitore(AbstractPage):
 
     def back(self):
         self._av2000.send_seq(keys.END)
-
     # end back
 
     def get_data(self):
@@ -69,7 +73,7 @@ class DettagliFornitore(AbstractPage):
             'pec': xt.x(12, 26),
             'url_internet': xt.x(14, 34),
             'pagamento': {
-                'cod': xt.x(15, (34, 40)),
+                'codice': xt.x(15, (34, 40)),
                 'descizione': xt.x(15, 40),
             },
             'iban': (
@@ -80,32 +84,35 @@ class DettagliFornitore(AbstractPage):
                 xt.x(16, (45, 50)),
                 xt.x(16, (51, 63))
             ),
-            'banca': xt.x(16, 64),
-            'iva_primaria': {
-                'codice': xt.x(17, (34, 37)),
-                'descrizione': xt.x(17, (38, 76)),
+            'codici_iva':{
+                'primario': {
+                    'codice': xt.x(17, (34, 37)),
+                    'descrizione': xt.x(17, (38, 76)),
+                },
+                'altri': [
+                    {
+                        'codice': xt.x(17, (83, 86)),
+                        'descrizione': '',
+                    },
+                    {
+                        'codice': xt.x(17, (88, 91)),
+                        'descrizione': '',
+                    },
+                ]
             },
-            'iva_altro_1': {
-                'codice': xt.x(17, (83, 86)),
-                'descrizione': '',
-            },
-            'iva_altro_2': {
-                'codice': xt.x(17, (88, 91)),
-                'descrizione': '',
-            },
-            'comune': {
+            'codice_comune': {
                 'cod': xt.x(18, (34, 40), int),
                 'nome': xt.x(18, (41, 76)),
             },
-            'regione': {
+            'codice_regione': {
                 'cod': xt.x(19, (34, 36), int),
                 'nome': xt.x(19, 37),
             },
-            'nazione': {
+            'codice_nazione': {
                 'cod': xt.x(20, (34, 37), int),
                 'nome': xt.x(20, 38),
             },
-            'comune_2018': {
+            'codice_comune_2018': {
                 'cod': xt.x(18, (95, 101), int),
             },
             'porto': {
@@ -124,7 +131,6 @@ class DettagliFornitore(AbstractPage):
                 'sesso': xt.x(24, (82, 83)),
             },
             'allegato': xt.x(26, (28, 29)),
-            'controllo_soglia': xt.x(26, (51, 52)),
             'ritenuta_acconto_pct': xt.x(26, (99, 104), float),
             'contropartite': [
                 {
@@ -239,8 +245,6 @@ class DettagliFornitore(AbstractPage):
 
         return last_data_line_ok and bottom_menu_ok
     # end _ready_other_3
-
-
 # end DettagliFornitore
 
 

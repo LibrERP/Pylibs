@@ -1,12 +1,10 @@
 import pyte
 
 
-
-
 class ASCIIStyler:
     
     COLOR_CODES = {
-        'default': {'fg': '39', 'bg': '49'},
+        'default': {'fg': '37', 'bg': '40'},
         'black': {'fg': '30', 'bg': '40'},
         'red': {'fg': '31', 'bg': '41'},
         'green': {'fg': '32', 'bg': '42'},
@@ -23,6 +21,7 @@ class ASCIIStyler:
         'light magenta': {'fg': '95', 'bg': '105'},
         'light cyan': {'fg': '96', 'bg': '106'},
         'white': {'fg': '97', 'bg': '107'},
+        'cursor': {'fg': '30', 'bg': '42'},
     }
     
     def __init__(
@@ -169,6 +168,32 @@ class ASCIIStyler:
         
         self._bg = value
     # end bg_setter
+
+    @property
+    def state(self):
+        return {
+            'blink': self._blink,
+            'bold': self._bold,
+            'italics': self._italics,
+            'reverse': self._reverse,
+            'strikethrough': self._strikethrough,
+            'underscore': self._underscore,
+            'fg': self._fg,
+            'bg': self._bg,
+        }
+    # end state
+
+    @state.setter
+    def state(self, state_to_load):
+        self._bold = state_to_load.get('bold', False)
+        self._italics = state_to_load.get('italics', False)
+        self._underscore = state_to_load.get('underscore', False)
+        self._strikethrough = state_to_load.get('strikethrough', False)
+        self._blink = state_to_load.get('blink', False)
+        self._reverse = state_to_load.get('reverse', False)
+        self._fg = state_to_load.get('fg', 'default')
+        self._bg = state_to_load.get('bg', 'default')
+    # end state
     
     def ascii_sequence(self):
         
@@ -190,22 +215,22 @@ class ASCIIStyler:
             ascii_style.append('5')
         # end if
 
+        if self.reverse:
+            ascii_style.append('7')
+        # end if
+
         if self.strikethrough:
             ascii_style.append('9')
         # end if
 
-        if self.reverse:
-            fg_code = self.COLOR_CODES[self.bg]['fg']
-            bg_code = self.COLOR_CODES[self.fg]['bg']
-        else:
-            fg_code = self.COLOR_CODES[self.fg]['fg']
-            bg_code = self.COLOR_CODES[self.bg]['bg']
-        # end if
+        # Foreground and background colors
+        ascii_style.append(self.COLOR_CODES[self.fg]['fg'])
+        ascii_style.append(self.COLOR_CODES[self.bg]['bg'])
 
-        ascii_style.append(fg_code)
-        ascii_style.append(bg_code)
+        ascii_style_str = ';'.join(ascii_style)
+        final_sequence = f'\x1b[{ascii_style_str}m'
         
-        return f'\x1b[{";".join(ascii_style)}m'
+        return final_sequence
     # end ascii_sequence
     
     def update(self, c: pyte.screens.Char):

@@ -1,8 +1,8 @@
-from av2000_terminator.navigation.base import AbstractPage, MenuItem, FakePage
+from av2000_terminator.navigation.base import AbstractMenu, MenuItem, FakePage
 from . import ordini_clienti
 
 
-class MainMenu(AbstractPage):
+class MainMenu(AbstractMenu):
 
     PAGE_NAME = 'Gest.area magazzino/vendite/acquisti'
 

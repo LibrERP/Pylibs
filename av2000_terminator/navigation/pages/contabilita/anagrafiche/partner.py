@@ -3,7 +3,7 @@ import re
 import time
 import typing
 
-from av2000_terminator.misc import keys
+from sshterminal import keys
 from av2000_terminator.misc.exceptions import LoadingTimeout, NoNextPage
 from av2000_terminator.navigation.base import AbstractPage
 

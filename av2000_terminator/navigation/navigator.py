@@ -1,14 +1,15 @@
 import typing
 
-from av2000_terminator.driver import AV2000Driver
+from av2000_terminator.terminal import AV2000Terminal
 from av2000_terminator.misc.exceptions import NoPreviousPage
 
 from . pages import MainMenu
+from . base import AbstractForm
 
 
 class Navigator:
     
-    def __init__(self, av2000: AV2000Driver, page_load_timeout_sec: float = 5):
+    def __init__(self, av2000: AV2000Terminal, page_load_timeout_sec: float = 5):
         
         # AV2000 instance used to initiate pages
         self._av2000 = av2000
@@ -64,8 +65,21 @@ class Navigator:
             )
         # end if
         
-    # end page_back
-    
+    # end back
+
+    def save_and_back(self):
+
+        # Remove current page and send the "back" sequence
+        page_current = self._pages_breadcrumb.pop()
+
+        assert isinstance(page_current, AbstractForm)
+        page_current.save()
+
+        # Wait for the new current page to be loaded
+        page_prev = self._pages_breadcrumb[-1]
+        page_prev.wait_loading(self._timeout_sec)
+    # end save
+
     def back_to_main_menu(self):
         while len(self) > 1:
             self.back()

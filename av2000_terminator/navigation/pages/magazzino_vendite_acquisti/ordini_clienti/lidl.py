@@ -1,7 +1,7 @@
-from av2000_terminator.misc import keys
+from sshterminal import keys
 import time
 
-from av2000_terminator.navigation.base import AbstractPage, MenuItem, FakePage
+from av2000_terminator.navigation.base import AbstractPage, AbstractMenu, MenuItem, FakePage
 from av2000_terminator.misc.exceptions import NoNextPage
 
 _TABLE_LIMIT = ('q' * 80, '-' * 80)
@@ -74,7 +74,6 @@ class TabellaClientiDestinatariLidl(AbstractPage):
         return last_page
 
     # end is_last_page
-
 # end TabellaClientiDestinatariLidl
 
 
@@ -150,11 +149,10 @@ class TabellaArticoliLidl(AbstractPage):
         return last_page
 
     # end is_last_page
-
 # end TabellaArticoliLidl
 
 
-class MainMenu(AbstractPage):
+class MainMenu(AbstractMenu):
 
     PAGE_NAME = 'Import ordini da xls Lidl'
 
@@ -174,7 +172,5 @@ class MainMenu(AbstractPage):
         menu_ok = self._av2000.display_lines[18].strip() == '16 Parametri import ordini xls Lidl'
 
         return name_ok and menu_ok
-
     # end ready
-
 # end MainMenu

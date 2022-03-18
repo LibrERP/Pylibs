@@ -1,5 +1,5 @@
 from av2000_terminator.misc.connection_params import ConnectionParams
-from av2000_terminator.driver import AV2000Driver
+from av2000_terminator.terminal import AV2000Terminal
 from av2000_terminator.navigation import Navigator
 from av2000_terminator.misc.exceptions import NoNextPage
 
@@ -16,7 +16,7 @@ def suppliers_list(connection_params: ConnectionParams):
     trigger_print = 100
 
     # Build the driver object
-    av2000: AV2000Driver = AV2000Driver(connection_params)
+    av2000: AV2000Terminal = AV2000Terminal(connection_params)
 
     # Get a navigator
     navigator: Navigator = Navigator(av2000)

@@ -1,4 +1,4 @@
-from av2000_terminator.navigation.base import AbstractPage, MenuItem, FakePage
+from av2000_terminator.navigation.base import AbstractPage, AbstractMenu, MenuItem, FakePage
 from . anagrafiche import AnagraficaClienti, AnagraficaFornitori
 
 
@@ -35,7 +35,7 @@ class ContabilitaProgressiviBase(AbstractPage):
 # end ContabilitaProgressiviBase
 
 
-class MainMenu(AbstractPage):
+class MainMenu(AbstractMenu):
     
     PAGE_NAME = 'Archivi di base area contabile'
     

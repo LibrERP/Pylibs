@@ -8,7 +8,7 @@ import typing
 
 
 from av2000_terminator.misc.exceptions import TaskError
-from av2000_terminator.driver import AV2000Driver
+from av2000_terminator.terminal import AV2000Terminal
 from av2000_terminator.navigation import Navigator
 from av2000_terminator.misc.connection_params import ConnectionParams
 from av2000_terminator.misc.exceptions import LoadingTimeout
@@ -59,7 +59,7 @@ class AbstractWorker(abc.ABC, Process):
         while self._max_retry_ok() and not self._error() and not self._task_completed():
 
             # Open connection to av2000
-            self._av2000 = AV2000Driver(self._connection_params)
+            self._av2000 = AV2000Terminal(self._connection_params)
             self._navigator = Navigator(self._av2000)
 
             # Notify task starting
