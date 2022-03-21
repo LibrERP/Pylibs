@@ -57,20 +57,19 @@ def suppliers_list(connection_params: ConnectionParams):
 
 
 def suppliers_get_batch(
-        connection_params: ConnectionParams, ids_list, procs_num: int = 1, keep_order: bool = False
+        connection_params: ConnectionParams, ids_list, procs_num: int = 1
 ) -> ParallelProducer:
     return ParallelProducer(
         connection_params=connection_params,
         worker_class=SuppliersDownloader,
         tasks_list=ids_list,
         procs_num=procs_num,
-        keep_order=keep_order,
     )
 # end suppliers_get_batch
 
 
 def suppliers_get_all(
-        connection_params: ConnectionParams, procs_num: int = 1, keep_order: bool = False
+        connection_params: ConnectionParams, procs_num: int = 1
 ) -> ParallelProducer:
     '''
         Return a list of suppliers ordered by AV2000 id from the smallest id to the largest id,
@@ -88,6 +87,5 @@ def suppliers_get_all(
         connection_params=connection_params,
         ids_list=all_suppliers,
         procs_num=procs_num,
-        keep_order=keep_order,
     )
 # end suppliers_get_batch

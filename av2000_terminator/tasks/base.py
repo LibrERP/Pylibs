@@ -131,7 +131,6 @@ class ParallelProducer:
             worker_class,
             tasks_list: typing.List,
             procs_num: int = 1,
-            keep_order: bool = False,
     ):
 
         # Check params

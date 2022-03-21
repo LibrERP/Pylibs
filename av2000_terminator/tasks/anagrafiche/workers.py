@@ -60,7 +60,5 @@ class SuppliersDownloader(AbstractWorker):
             # end if
 
         # end for
-
     # end _task_loop
-
 # end SuppliersDownloadTask
