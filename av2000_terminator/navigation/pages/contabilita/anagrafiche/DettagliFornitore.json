@@ -554,7 +554,7 @@
     {
       "line": 35,
       "start": 72,
-      "label": "sconti.1                                          Sconti",
+      "label": "sconti.1",
       "size": 5,
       "writable": true,
       "screen": "main",
