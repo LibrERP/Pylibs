@@ -1,15 +1,15 @@
 from collections import defaultdict
 
 
-class ImportersRegistry:
+class ExportersRegistry:
     """
-        Register of available importers to be populated using the
-        "register_importer" class method.
+        Register of available exporters to be populated using the
+        "register_exporter" class method.
     """
-    _importers_by_collection = defaultdict(dict)
+    _exporters_by_backend = defaultdict(dict)
 
     @classmethod
-    def register_importer(cls, collection_name, binding_class):
+    def register_exporter(cls, collection_name: str, binding_class):
         """Method to populate the importers register.
 
         This method is to be used with the backend definition for the connector
@@ -17,13 +17,13 @@ class ImportersRegistry:
         model = binding_class._name
         friendly_name = binding_class._description
 
-        cls._importers_by_collection[collection_name][model] = friendly_name
+        cls._exporters_by_backend[collection_name][model] = friendly_name
     # end register_importer
 
     @classmethod
-    def importers(cls, collection_name):
+    def exporters(cls, backend_name: str):
         selection = sorted(
-            cls._importers_by_collection[collection_name].items(),
+            cls._exporters_by_backend[backend_name].items(),
             key=lambda x: x[1]
         )
         return selection
@@ -32,8 +32,8 @@ class ImportersRegistry:
     @classmethod
     def is_registered(cls, collection_name: str, binding_class):
         model = binding_class._name
-        collection = cls._importers_by_collection.get(collection_name, {})
+        collection = cls._exporters_by_backend.get(collection_name, {})
         return model in collection
     # end is_registered
 
-# end ImportersRegistry
+# end ExportersRegistry
