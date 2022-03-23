@@ -36,7 +36,7 @@ class AbstractWorker(abc.ABC, Process):
         self._queue = q
         self._tasks = tasks
         # Number fo items downloaded: it's equal to list index of the last downloaded item plus 1.
-        self._fetched_items = 0
+        self._processed_items = 0
         self._iterations_counter = 0
         self._max_retry = max_retry
         self._av2000 = None
@@ -109,7 +109,7 @@ class AbstractWorker(abc.ABC, Process):
     # end _iterations_ok
 
     def _task_completed(self):
-        return len(self._tasks) == self._fetched_items
+        return len(self._tasks) == self._processed_items
     # end task completed
 
     def _error(self):
