@@ -1,7 +1,7 @@
-from av2000_terminator.tasks.base import AbstractWorker
+from av2000_terminator.tasks.base import AbstractReadWorker
 
 
-class DestinationsConversionDownloader(AbstractWorker):
+class DestinationsConversionDownloader(AbstractReadWorker):
     
     TASK_NAME = 'LIDL destinations conversions downloader'
     
@@ -45,7 +45,7 @@ class DestinationsConversionDownloader(AbstractWorker):
 # end SuppliersDownloadTask
 
 
-class ProductsConversionDownloader(AbstractWorker):
+class ProductsConversionDownloader(AbstractReadWorker):
     TASK_NAME = 'LIDL products conversions downloader'
 
     def __init__(self, *args, **kwargs):

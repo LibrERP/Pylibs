@@ -126,7 +126,6 @@ class PartnersMainPage(AbstractPage):
     def show_partner(self, supplier_id: typing.Union[int, str]):
         self._av2000.send_line(str(supplier_id))
         self._navigator.set_current_page(self.PARTNER_DETAILS_PAGE)
-
     # end show_partner
 
     def open_partners_list(self):

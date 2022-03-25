@@ -89,3 +89,29 @@ def suppliers_get_all(
         procs_num=procs_num,
     )
 # end suppliers_get_batch
+
+
+class SupplierWriter:
+
+    def __init__(self, navigator: Navigator):
+        self._navigator = navigator
+
+        self._navigator.back_to_main_menu()
+        self._navigator.current_page.menu_select(3)
+        self._navigator.current_page.menu_select(9)
+    # end __init__
+
+    def write_data(self, supplier_code: int, data: dict):
+
+        # Open supplier page
+        self._navigator.current_page.show_partner(supplier_code)
+
+        # Write data
+        for key, value in data.items():
+            self._navigator.current_page.fields[key].data = value
+        # end for
+
+        # Save and close page
+        self._navigator.save_and_back()
+    # end write_data
+# end SupplierWriter
