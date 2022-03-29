@@ -1,5 +1,8 @@
 import abc
 import dataclasses
+import logging
+import time
+
 from frozendict import frozendict
 import heapq
 import json
@@ -109,6 +112,10 @@ class Field:
     def __init__(
             self, descriptor: FieldDescriptor, av2000: AV2000Terminal, form_modified_flag: FormModifiedFlag
     ):
+
+        cls = self.__class__
+        self._logger = logging.getLogger(f'{cls.__module__}.{cls.__qualname__}')
+
         self._descriptor = descriptor
         self._av2000 = av2000
         self._form_modified_flag = form_modified_flag
@@ -136,12 +143,15 @@ class Field:
     @_require_writable
     def flush(self) -> None:
         if self._buffer is not None:
+
+            self._logger.info(f'Flushing filed {self.label} >>>>{self._buffer}<<<<')
+
             # 1 - Move cursor
             self.move_cursor_here()
             # 2 - Clear field
             self.clear_field()
             # 3 - Write data
-            self._av2000.cursor.write(self._buffer)
+            self._av2000.cursor.write(self._buffer)  # TODO: CONTROLLARE METODO WRITE, per qualche motivo NON SCRIVE
             # 4 - Clear local buffer
             self._buffer = None
         # end if
@@ -166,10 +176,22 @@ class Field:
             calling the "move_method" the cursor has not changed
             it's position.
             """
+
+            self._av2000.print_screen()
+
             while move_while():
                 pos = get_pos()
+
                 move_method()
+
+                # The following two instructions are here to ensure the
+                # terminal emulator has been updated before checking for
+                # cursor position
+                time.sleep(0.1)
+                self._av2000.send_seq('')
+
                 if pos == get_pos():
+                    self._av2000.print_screen()
                     error_msg = self._av2000.display_lines[-3].replace('q', '').strip()
                     raise self.FieldValueError(f'Field "{self.label}": {error_msg}')
                 # end if
@@ -267,7 +289,7 @@ class Field:
     @data.setter
     @_require_writable
     def data(self, value: str):
-        self._buffer = value
+        self._buffer = str(value)
         self._form_modified_flag.signal_modified()
     # end data.setter
 
@@ -328,6 +350,10 @@ class Field:
 
 
 class AbstractForm(AbstractPage, abc.ABC):
+
+    class FormError(Exception):
+        pass
+    # end FormError
 
     DATA_FILE_PATH = None
 
@@ -537,19 +563,29 @@ class AbstractForm(AbstractPage, abc.ABC):
         # Write changes on the screen
         for field in self.fields_list:
             if field.flush_required:
+                self._logger.debug(f'Flushing field {field.label}')
                 field.flush()
             # end if
         # end for
     # end write
 
-    def save_and_back(self):
-        """Save data on the screen to the disk"""
-        self._av2000.send_line('')
-    # end commit
-
-    def commit(self):
+    def commit_changes(self):
         self.flush()
-        self.save_and_back()
+        self._save_and_back()
+
+        time.sleep(0.1)
+
+        # Manage possible errors
+        if self._av2000.display_lines[-3].startswith('MSG0239 Partita IVA gia\' usata per'):
+            self._av2000.print_screen()
+            self._save_and_back()
+
+        elif self._av2000.display_lines[-3].startswith('MSG'):
+            raise self.FormError(self._av2000.display_lines[-3].replace('q', '').strip())
+
+        else:
+            pass
+        # end if
     # end commit
 
     @classmethod
@@ -597,4 +633,9 @@ class AbstractForm(AbstractPage, abc.ABC):
             assert False, f'fields_collector found an unmanaged type: {type(obj)} --> {str(obj)}'
         # end if
     # end walk
+
+    def _save_and_back(self):
+        """Save data on the screen to the disk"""
+        self._av2000.send_line('')
+    # end commit
 # end Form
