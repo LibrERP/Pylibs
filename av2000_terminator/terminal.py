@@ -233,6 +233,11 @@ class AV2000Terminal:
         # end
     # end wait_ready
 
+    @ensure_open
+    def print_screen(self):
+        self._terminal.screen.render()
+    # end print_screen
+
     @property
     @ensure_open
     def cursor(self):
