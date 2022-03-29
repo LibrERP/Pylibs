@@ -1,11 +1,17 @@
+import logging
+
+import typing
+
 from av2000_terminator.misc.connection_params import ConnectionParams
 from av2000_terminator.terminal import AV2000Terminal
 from av2000_terminator.navigation import Navigator
 from av2000_terminator.misc.exceptions import NoNextPage
 
 from av2000_terminator.tasks.base import ParallelProducer
+from sshterminal import keys
 
 from . workers import SuppliersDownloader
+from ...navigation.base.form import Field
 from ...navigation.pages.contabilita.anagrafiche.fornitori import ListaFornitori
 
 
@@ -91,27 +97,83 @@ def suppliers_get_all(
 # end suppliers_get_batch
 
 
-class SupplierWriter:
+class SuppliersWriter:
 
-    def __init__(self, navigator: Navigator):
-        self._navigator = navigator
+    def __init__(self, connection_params: ConnectionParams):
 
-        self._navigator.back_to_main_menu()
-        self._navigator.current_page.menu_select(3)
-        self._navigator.current_page.menu_select(9)
+        class_obj = self.__class__
+        self._logger = logging.getLogger(f'{class_obj.__module__}.{class_obj.__qualname__}')
+
+        self._connection_params = connection_params
+
+        self._av2000: AV2000Terminal = None
+        self._navigator: Navigator = None
     # end __init__
 
-    def write_data(self, supplier_code: int, data: dict):
+    @property
+    def connected(self):
+        if self._av2000 and not self._av2000.closed:
+            return True
+        else:
+            return False
+        # end if
+    # end connected
+
+    def connect(self):
+
+        if not self.connected:
+            self._av2000 = AV2000Terminal(self._connection_params)
+            self._navigator = Navigator(self._av2000)
+
+            self._navigator.back_to_main_menu()
+            self._navigator.current_page.menu_select(3)
+            self._navigator.current_page.menu_select(9)
+        # end if
+
+    # end connect
+
+    def close(self):
+        if self.connected:
+            self._navigator.exit()
+        # end if
+    # end close
+
+    def write_data(self, supplier_code: typing.Union[int, str], data: dict):
+
+        sc = str(supplier_code)
 
         # Open supplier page
-        self._navigator.current_page.show_partner(supplier_code)
+        self._logger.info(f'[supplier {sc:>5s}] Opening partner page')
+        self._navigator.current_page.show_partner(sc)
 
         # Write data
+        self._logger.info(f'[supplier {sc:>5s}] Setting values for fields')
         for key, value in data.items():
             self._navigator.current_page.fields[key].data = value
         # end for
 
         # Save and close page
-        self._navigator.save_and_back()
+        self._logger.info(f'[supplier {sc:>5s}] Committing changes')
+
+        try:
+            self._navigator.commit_changes()
+
+        except Field.FieldValueError as fve:
+            self._logger.error(str(fve))
+            self.exit_on_error()
+            self._av2000.print_screen()
+            raise fve
+
+        except Exception as e:
+            self._av2000.print_screen()
+            raise e
+        # end try / except
+
+        self._logger.info(f'[supplier {sc:>5s}] Completed')
     # end write_data
-# end SupplierWriter
+
+    def exit_on_error(self):
+        self._av2000.send_seq(keys.END)
+        self._av2000.send_seq(keys.END)
+    # end exit_on_error
+# end SuppliersWriter
