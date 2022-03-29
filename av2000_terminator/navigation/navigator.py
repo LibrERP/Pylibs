@@ -67,13 +67,13 @@ class Navigator:
         
     # end back
 
-    def save_and_back(self):
+    def commit_changes(self):
 
         # Remove current page and send the "back" sequence
         page_current = self._pages_breadcrumb.pop()
 
         assert isinstance(page_current, AbstractForm)
-        page_current.save()
+        page_current.commit_changes()
 
         # Wait for the new current page to be loaded
         page_prev = self._pages_breadcrumb[-1]
