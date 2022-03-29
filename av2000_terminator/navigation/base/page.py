@@ -1,4 +1,5 @@
 import abc
+import logging
 import time
 
 from sshterminal import keys
@@ -9,6 +10,10 @@ from av2000_terminator.terminal import AV2000Terminal
 class AbstractPage(abc.ABC):
     
     def __init__(self, navigator: 'Navigator'):
+
+        cls = self.__class__
+        self._logger = logging.getLogger(f'{cls.__module__}.{cls.__qualname__}')
+
         self._navigator: 'Navigator' = navigator
         self._av2000: AV2000Terminal = navigator.driver
     # end __init__
