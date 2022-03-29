@@ -34,7 +34,6 @@ class DettagliFornitore(AbstractForm):
         name_ok = self.name == self.PAGE_NAME
 
         return last_data_line_ok and bottom_menu_ok and name_ok
-
     # end ready
 
     def back(self):
@@ -212,8 +211,25 @@ class DettagliFornitore(AbstractForm):
 
         # Return extracted data
         return data
-
     # end get_data
+
+    def commit_changes(self):
+        super().commit_changes()
+
+        time.sleep(0.1)
+
+        # Manage possible errors
+        if self._av2000.display_lines[-3].startswith('MSG0239 Partita IVA gia\' usata per'):
+            self._av2000.send_seq('\n')
+
+        elif self._av2000.display_lines[-3].startswith('MSG00"% Partita IVA errata'):
+            self._av2000.send_seq(keys.F[4])
+
+        elif self._av2000.display_lines[-3].startswith('MSG'):
+            raise self.FormError(self._av2000.display_lines[-3].replace('q', '').strip())
+
+        # end if
+    # end commit
 
     def _ready_other_1(self):
         lines = self._av2000.display_lines

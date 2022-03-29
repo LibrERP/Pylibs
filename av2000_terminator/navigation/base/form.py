@@ -572,20 +572,6 @@ class AbstractForm(AbstractPage, abc.ABC):
     def commit_changes(self):
         self.flush()
         self._save_and_back()
-
-        time.sleep(0.1)
-
-        # Manage possible errors
-        if self._av2000.display_lines[-3].startswith('MSG0239 Partita IVA gia\' usata per'):
-            self._av2000.print_screen()
-            self._save_and_back()
-
-        elif self._av2000.display_lines[-3].startswith('MSG'):
-            raise self.FormError(self._av2000.display_lines[-3].replace('q', '').strip())
-
-        else:
-            pass
-        # end if
     # end commit
 
     @classmethod
@@ -636,6 +622,6 @@ class AbstractForm(AbstractPage, abc.ABC):
 
     def _save_and_back(self):
         """Save data on the screen to the disk"""
-        self._av2000.send_line('')
+        self._av2000.send_seq('\n')
     # end commit
 # end Form
