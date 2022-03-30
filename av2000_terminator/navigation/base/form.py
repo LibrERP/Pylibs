@@ -177,8 +177,6 @@ class Field:
             it's position.
             """
 
-            self._av2000.print_screen()
-
             while move_while():
                 pos = get_pos()
 
@@ -622,6 +620,6 @@ class AbstractForm(AbstractPage, abc.ABC):
 
     def _save_and_back(self):
         """Save data on the screen to the disk"""
-        self._av2000.send_seq('\n')
+        self._av2000.send_seq(self._av2000.RETURN_CHAR)
     # end commit
 # end Form

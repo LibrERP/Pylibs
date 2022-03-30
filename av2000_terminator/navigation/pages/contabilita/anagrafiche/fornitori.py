@@ -220,7 +220,7 @@ class DettagliFornitore(AbstractForm):
 
         # Manage possible errors
         if self._av2000.display_lines[-3].startswith('MSG0239 Partita IVA gia\' usata per'):
-            self._av2000.send_seq('\n')
+            self._av2000.send_seq(self._av2000.RETURN_CHAR)
 
         elif self._av2000.display_lines[-3].startswith('MSG00"% Partita IVA errata'):
             self._av2000.send_seq(keys.F[4])
