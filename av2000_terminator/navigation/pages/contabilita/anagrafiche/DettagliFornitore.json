@@ -1,0 +1,618 @@
+{
+  "codice": {
+    "line": 3,
+    "start": 7,
+    "label": "codice",
+    "size": 7,
+    "writable": false,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "ragione_sociale": {
+    "line": 3,
+    "start": 30,
+    "label": "ragione_sociale",
+    "size": 40,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "ragione_sociale_agg": {
+    "line": 4,
+    "start": 30,
+    "label": "ragione_sociale_agg",
+    "size": 40,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "indirizzo": {
+    "line": 5,
+    "start": 30,
+    "label": "indirizzo",
+    "size": 40,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "cap": {
+    "line": 6,
+    "start": 30,
+    "label": "cap",
+    "size": 6,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "localita": {
+    "line": 6,
+    "start": 37,
+    "label": "localita",
+    "size": 40,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "provincia": {
+    "line": 6,
+    "start": 78,
+    "label": "provincia",
+    "size": 2,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "piano_conti": {
+    "l1": {
+      "line": 7,
+      "start": 30,
+      "label": "piano_conti.l1",
+      "size": 4,
+      "writable": true,
+      "screen": "main",
+      "__class__": "FieldDescriptor"
+    },
+    "l2": {
+      "line": 7,
+      "start": 35,
+      "label": "piano_conti.l2",
+      "size": 4,
+      "writable": true,
+      "screen": "main",
+      "__class__": "FieldDescriptor"
+    },
+    "nome": {
+      "line": 7,
+      "start": 40,
+      "label": "piano_conti.nome",
+      "size": 60,
+      "writable": false,
+      "screen": "main",
+      "__class__": "FieldDescriptor"
+    }
+  },
+  "cf_rappresentante": {
+    "line": 8,
+    "start": 38,
+    "label": "cf_rappresentante",
+    "size": 16,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "usare_per_spesometro": {
+    "line": 8,
+    "start": 79,
+    "label": "usare_per_spesometro",
+    "size": 1,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "partita_iva": {
+    "line": 9,
+    "start": 26,
+    "label": "partita_iva",
+    "size": 16,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "codice_fiscale": {
+    "line": 9,
+    "start": 53,
+    "label": "codice_fiscale",
+    "size": 16,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "registro_imprese": {
+    "line": 9,
+    "start": 82,
+    "label": "registro_imprese",
+    "size": 11,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "telefono": {
+    "line": 10,
+    "start": 26,
+    "label": "telefono",
+    "size": 20,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "fax": {
+    "line": 10,
+    "start": 53,
+    "label": "fax",
+    "size": 20,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "stato_giuridico": {
+    "line": 10,
+    "start": 92,
+    "label": "stato_giuridico",
+    "size": 1,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "email": {
+    "line": 11,
+    "start": 26,
+    "label": "email",
+    "size": 40,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "cellulare": {
+    "line": 11,
+    "start": 73,
+    "label": "cellulare",
+    "size": 20,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "pec": {
+    "line": 12,
+    "start": 26,
+    "label": "pec",
+    "size": 60,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "url_internet": {
+    "line": 14,
+    "start": 34,
+    "label": "url_internet",
+    "size": 80,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "pagamento": {
+    "codice": {
+      "line": 15,
+      "start": 34,
+      "label": "pagamento.codice",
+      "size": 6,
+      "writable": true,
+      "screen": "main",
+      "__class__": "FieldDescriptor"
+    },
+    "descrizione": {
+      "line": 15,
+      "start": 41,
+      "label": "pagamento.descrizione",
+      "size": 60,
+      "writable": false,
+      "screen": "main",
+      "__class__": "FieldDescriptor"
+    }
+  },
+  "iban": [
+    {
+      "line": 16,
+      "start": 31,
+      "label": "iban.1",
+      "size": 2,
+      "writable": true,
+      "screen": "main",
+      "__class__": "FieldDescriptor"
+    },
+    {
+      "line": 16,
+      "start": 34,
+      "label": "iban.2",
+      "size": 2,
+      "writable": true,
+      "screen": "main",
+      "__class__": "FieldDescriptor"
+    },
+    {
+      "line": 16,
+      "start": 37,
+      "label": "iban.3",
+      "size": 1,
+      "writable": true,
+      "screen": "main",
+      "__class__": "FieldDescriptor"
+    },
+    {
+      "line": 16,
+      "start": 39,
+      "label": "iban.4",
+      "size": 5,
+      "writable": true,
+      "screen": "main",
+      "__class__": "FieldDescriptor"
+    },
+    {
+      "line": 16,
+      "start": 45,
+      "label": "iban.5",
+      "size": 5,
+      "writable": true,
+      "screen": "main",
+      "__class__": "FieldDescriptor"
+    },
+    {
+      "line": 16,
+      "start": 51,
+      "label": "iban.6",
+      "size": 12,
+      "writable": true,
+      "screen": "main",
+      "__class__": "FieldDescriptor"
+    }
+  ],
+  "codici_iva": {
+      "primario": {
+      "line": 17,
+      "start": 34,
+      "label": "codici_iva.primario",
+      "size": 3,
+      "writable": true,
+      "screen": "main",
+      "__class__": "FieldDescriptor"
+    },
+    "altri": [
+      {
+        "line": 17,
+        "start": 83,
+        "label": "codici_iva.altri.1",
+        "size": 3,
+        "writable": true,
+        "screen": "main",
+        "__class__": "FieldDescriptor"
+      },
+      {
+        "line": 17,
+        "start": 88,
+        "label": "codici_iva.altri.2",
+        "size": 3,
+        "writable": true,
+        "screen": "main",
+        "__class__": "FieldDescriptor"
+      }
+    ]
+  },
+  "codice_comune": {
+    "line": 18,
+    "start": 34,
+    "label": "codice_comune",
+    "size": 6,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "codice_comune_2018": {
+    "line": 18,
+    "start": 95,
+    "label": "codice_comune_2018",
+    "size": 6,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "codice_regione": {
+    "line": 19,
+    "start": 34,
+    "label": "codice_regione",
+    "size": 2,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "codice_nazione": {
+    "line": 20,
+    "start": 34,
+    "label": "codice_nazione",
+    "size": 3,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "porto": {
+    "line": 21,
+    "start": 34,
+    "label": "porto",
+    "size": 3,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "banca_interna_prev": {
+    "line": 22,
+    "start": 34,
+    "label": "banca_interna_prev",
+    "size": 3,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "icqrf": {
+    "line": 23,
+    "start": 34,
+    "label": "icqrf",
+    "size": 8,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "nascita": {
+    "data": {
+      "line": 24,
+      "start": 28,
+      "label": "nascita.data",
+      "size": 10,
+      "writable": true,
+      "screen": "main",
+      "__class__": "FieldDescriptor"
+    },
+    "comune": {
+      "line": 24,
+      "start": 46,
+      "label": "nascita.comune",
+      "size": 6,
+      "writable": true,
+      "screen": "main",
+      "__class__": "FieldDescriptor"
+    },
+    "provincia": {
+      "line": 24,
+      "start": 72,
+      "label": "nascita.provincia",
+      "size": 2,
+      "writable": true,
+      "screen": "main",
+      "__class__": "FieldDescriptor"
+    },
+    "sesso": {
+      "line": 24,
+      "start": 82,
+      "label": "nascita.sesso",
+      "size": 1,
+      "writable": true,
+      "screen": "main",
+      "__class__": "FieldDescriptor"
+    }
+  },
+  "allegato": {
+    "line": 26,
+    "start": 28,
+    "label": "allegato",
+    "size": 1,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "ritenuta_acconto_pct": {
+    "line": 26,
+    "start": 99,
+    "label": "ritenuta_acconto_pct",
+    "size": 5,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "contropartite": [
+    [
+      {
+        "line": 27,
+        "start": 28,
+        "label": "contropartite.1.l1",
+        "size": 4,
+        "writable": true,
+        "screen": "main",
+        "__class__": "FieldDescriptor"
+      },
+      {
+        "line": 27,
+        "start": 33,
+        "label": "contropartite.1.l2",
+        "size": 4,
+        "writable": true,
+        "screen": "main",
+        "__class__": "FieldDescriptor"
+      },
+      {
+        "line": 27,
+        "start": 38,
+        "label": "contropartite.1.l3",
+        "size": 6,
+        "writable": true,
+        "screen": "main",
+        "__class__": "FieldDescriptor"
+      }
+    ],
+    [
+      {
+        "line": 28,
+        "start": 28,
+        "label": "contropartite.2.l1",
+        "size": 4,
+        "writable": true,
+        "screen": "main",
+        "__class__": "FieldDescriptor"
+      },
+      {
+        "line": 28,
+        "start": 33,
+        "label": "contropartite.2.l2",
+        "size": 4,
+        "writable": true,
+        "screen": "main",
+        "__class__": "FieldDescriptor"
+      },
+      {
+        "line": 28,
+        "start": 38,
+        "label": "contropartite.2.l3",
+        "size": 6,
+        "writable": true,
+        "screen": "main",
+        "__class__": "FieldDescriptor"
+      }
+    ],
+    [
+      {
+        "line": 29,
+        "start": 28,
+        "label": "contropartite.3.l1",
+        "size": 4,
+        "writable": true,
+        "screen": "main",
+        "__class__": "FieldDescriptor"
+      },
+      {
+        "line": 29,
+        "start": 33,
+        "label": "contropartite.3.l2",
+        "size": 4,
+        "writable": true,
+        "screen": "main",
+        "__class__": "FieldDescriptor"
+      },
+      {
+        "line": 29,
+        "start": 38,
+        "label": "contropartite.3.l3",
+        "size": 6,
+        "writable": true,
+        "screen": "main",
+        "__class__": "FieldDescriptor"
+      }
+    ]
+  ],
+  "note_estratto_conto": {
+    "line": 31,
+    "start": 38,
+    "label": "note_estratto_conto",
+    "size": 30,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "persona_da_contattare": {
+    "line": 32,
+    "start": 38,
+    "label": "persona_da_contattare",
+    "size": 30,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "obsoleto": {
+    "line": 32,
+    "start": 92,
+    "label": "obsoleto",
+    "size": 1,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "codice_ipa": {
+    "line": 33,
+    "start": 25,
+    "label": "codice_ipa",
+    "size": 7,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "sconti": [
+    {
+      "line": 35,
+      "start": 72,
+      "label": "sconti.1",
+      "size": 5,
+      "writable": true,
+      "screen": "main",
+      "__class__": "FieldDescriptor"
+    },
+    {
+      "line": 35,
+      "start": 78,
+      "label": "sconti.2",
+      "size": 5,
+      "writable": true,
+      "screen": "main",
+      "__class__": "FieldDescriptor"
+    },
+    {
+      "line": 35,
+      "start": 84,
+      "label": "sconti.3",
+      "size": 5,
+      "writable": true,
+      "screen": "main",
+      "__class__": "FieldDescriptor"
+    },
+    {
+      "line": 35,
+      "start": 90,
+      "label": "sconti.4",
+      "size": 5,
+      "writable": true,
+      "screen": "main",
+      "__class__": "FieldDescriptor"
+    }
+  ],
+  "cognome": {
+    "line": 36,
+    "start": 25,
+    "label": "cognome",
+    "size": 20,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "nome": {
+    "line": 36,
+    "start": 51,
+    "label": "nome",
+    "size": 20,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  },
+  "pct_imponibile_calcolo_ra": {
+    "line": 36,
+    "start": 89,
+    "label": "pct_imponibile_calcolo_ra",
+    "size": 6,
+    "writable": true,
+    "screen": "main",
+    "__class__": "FieldDescriptor"
+  }
+}

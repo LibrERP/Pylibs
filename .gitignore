@@ -131,6 +131,7 @@ dmypy.json
 # PyCharm files
 .idea/
 
+
 # # # # # # # # # # #
 # ribalta library
 # # # # # # # # # # #
@@ -138,4 +139,11 @@ dmypy.json
 ribalta/dist
 ribalta/.ipynb_checkpoints
 ribalta/.pytest_cache
+
+
+# # # # # # # # # # # # # # #
+# AV2000 terminator library
+# # # # # # # # # # # # # # #
+
+av2000_terminator/test
 
