@@ -1,10 +1,11 @@
-import itertools
-import re
 from datetime import datetime, date
 import importlib.resources
-
-import typing
+import itertools
+import logging
+from mako import exceptions
 from mako.template import Template
+import re
+import typing
 
 from .utils.errors import FiscalcodeMissingError, FiscalcodeAndVATMissingError
 from .utils.odoo_stuff import _
@@ -19,6 +20,9 @@ from .utils.validators import (
 
 # Name of the Mako template file
 CBI_TEMPLATE_FILE = 'cbi.mako'
+
+# Logging object initialization
+_logger = logging.getLogger(__name__)
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -561,15 +565,28 @@ class Document:
         cbi_template = Template(
             text=importlib.resources.read_text(__package__ + '.templates', CBI_TEMPLATE_FILE)
         )
-        
+
         # Group the receipts if requested
         if group:
             receipt_groups = self._group_receipts()
-            cbi_document = cbi_template.render(doc=self, lines=receipt_groups)
+            lines_for_template = receipt_groups
         else:
-            cbi_document = cbi_template.render(doc=self, lines=self._receipts)
+            lines_for_template = self._receipts
         # end if
-        return cbi_document
+
+        try:
+            cbi_document = cbi_template.render(doc=self, lines=lines_for_template)
+            return cbi_document
+
+        except Exceptio as e:
+            render_error_msg = exceptions.text_error_template().render()
+
+            _logger.error(render_error_msg)
+            print(render_error_msg)
+
+            raise e
+
+        # end try / except
     # end render
     
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
