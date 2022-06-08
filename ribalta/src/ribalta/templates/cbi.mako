@@ -49,7 +49,7 @@
 
             # Build a description for each receipt
             descriptions = map(
-                lambda r: f'{r.invoice_number} {r.amount:.2f}',
+                lambda r: f'{r.communication}',
                 receipt.grouped_receipts
             )
 
@@ -57,13 +57,7 @@
             msg = unidecode(f'Fatt: {", ".join(descriptions)}')
 
         else:
-
-            i_num = receipt.invoice_number
-            i_date = receipt.invoice_date
-            i_amount = receipt.amount
-
-            msg = unidecode(f'FATT. {i_num} DEL {i_date:%d/%m/%Y} IMP {i_amount}')
-
+            msg = unidecode(receipt.communication)
         # end if
 
         # Format the message and return the result

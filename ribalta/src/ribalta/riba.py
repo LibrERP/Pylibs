@@ -26,27 +26,22 @@ CBI_TEMPLATE_FILE = 'cbi.mako'
 class Receipt:
     """
     Class that represents a single RiBa receipt to be added to a RiBa document.
-    
-    :param duedate_move_line: Odoo object representing the amount to be payed and it's maturity date
-    :type duedate_move_line: class:`account.move.line`
-    :param invoice: Odoo object representing the invoice of which this receipt is part
-    :type invoice: class:`account.invoice`
-    :param debtor_partner: Odoo object holding the name and address of the debtor
-    :type debtor_partner: class:`res.partner`
-    :param debtor_bank_account: Odoo object holding the details about the debtor's bank and account
-    :type debtor_bank_account: class:`res.partner.bank`
+
+    :param payment_line: Odoo object representing the payment line or the payment order
+    :type payment_line: class:`account.payment.line`
     """
 
-    def __init__(self, duedate_move_line, invoice, debtor_partner, debtor_bank_account):
+    def __init__(self, payment_line):
 
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         # Fields initialization
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-        self._duedate_move_line = duedate_move_line
-        self._invoice = invoice
-        self._debtor_partner = debtor_partner
-        self._debtor_bank_account = debtor_bank_account
+        self._duedate_move_line = payment_line.move_line_id
+        self._invoice = payment_line.move_line_id.invoice_id
+        self._debtor_partner = payment_line.partner_id
+        self._debtor_bank_account = payment_line.partner_bank_id
+        self._communication = payment_line.communication
 
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         # Sanity checks
@@ -188,6 +183,11 @@ class Receipt:
         else:
             return self._duedate_move_line.move_id.invoice_date
     # end invoice_date
+
+    @property
+    def communication(self):
+        return self._communication
+    # end communication
     
     @property
     def grouping_key(self) -> typing.Tuple[str, str, str, date]:
@@ -204,7 +204,7 @@ class Receipt:
             str(self.debtor_bank_cab),
             self.duedate
         )
-    # end gkey
+    # end grouping_key
     
     def __str__(self):
         name = self.debtor_name[:25].ljust(25, ' ')
