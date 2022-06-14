@@ -19,7 +19,7 @@ def test_reference_riba_ok():
     # to perform the same steps of the real building process
     riba_doc = Document(**test_data.head)
     for rcpt in test_data.receipts:
-        riba_doc.add_receipt(Receipt(**rcpt))
+        riba_doc.add_receipt(Receipt(rcpt))
     # end for
 
     # Render the riba_doc as string
@@ -55,7 +55,7 @@ def test_reference_riba_debt_fiscode_empty_with_vat():
     # to perform the same steps of the real building process
     riba_doc = Document(**test_data.head)
     for rcpt in test_data.receipts:
-        riba_doc.add_receipt(Receipt(**rcpt))
+        riba_doc.add_receipt(Receipt(rcpt))
     # end for
 
     # Render the riba_doc as string
@@ -91,7 +91,7 @@ def test_reference_riba_debt_fiscode_false_with_vat():
     # to perform the same steps of the real building process
     riba_doc = Document(**test_data.head)
     for rcpt in test_data.receipts:
-        riba_doc.add_receipt(Receipt(**rcpt))
+        riba_doc.add_receipt(Receipt(rcpt))
     # end for
 
     # Render the riba_doc as string
@@ -127,7 +127,7 @@ def test_reference_riba_cred_no_fiscode():
     # to perform the same steps of the real building process
     riba_doc = Document(**test_data.head)
     for rcpt in test_data.receipts:
-        riba_doc.add_receipt(Receipt(**rcpt))
+        riba_doc.add_receipt(Receipt(rcpt))
     # end for
 
     # Render the riba_doc as string
@@ -163,7 +163,7 @@ def test_riba_grouping():
     # to perform the same steps of the real building process
     riba_doc = Document(**test_data.head)
     for rcpt in test_data.receipts:
-        riba_doc.add_receipt(Receipt(**rcpt))
+        riba_doc.add_receipt(Receipt(rcpt))
     # end for
 
     # Render the riba_doc as string

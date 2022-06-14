@@ -45,7 +45,8 @@
       "debtor_bank_account": {
         "bank_name": "",
         "iban": ""
-      }
+      },
+      "communication": "Ciao :-)"
     },
     
     {
@@ -73,7 +74,8 @@
       "debtor_bank_account": {
         "bank_name": "",
         "iban": ""
-      }
+      },
+      "communication": "Ciao :-)"
     }
   ]
 }

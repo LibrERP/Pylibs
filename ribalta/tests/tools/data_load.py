@@ -1,8 +1,9 @@
+from collections import namedtuple
 from pathlib import Path
 import importlib.resources
 import json
 
-from .fakes import BankAccountFake, InvoiceFake, MoveLineFake, PartnerFake, CompanyFake
+from .fakes import BankAccountFake, InvoiceFake, MoveLineFake, PartnerFake, CompanyFake, PaymentLineFake
 
 
 TEST_DATA_PACKAGE = 'tests.data'
@@ -29,12 +30,12 @@ class FakeData:
             'creditor_bank_account': BankAccountFake(**creditor_bank_account),
         }
         self.receipts = [
-            {
-                'debtor_partner': PartnerFake(**rcpt['debtor_partner']),
-                'debtor_bank_account': BankAccountFake(**rcpt['debtor_bank_account']),
-                'invoice': InvoiceFake(**rcpt['invoice']),
-                'duedate_move_line': MoveLineFake(**rcpt['duedate_move_line']),
-            }
+            PaymentLineFake(
+                partner_id=PartnerFake(**rcpt['debtor_partner']),
+                partner_bank_id=BankAccountFake(**rcpt['debtor_bank_account']),
+                move_line_id=MoveLineFake(**rcpt['duedate_move_line'], invoice_id=InvoiceFake(**rcpt['invoice'])),
+                communication=rcpt['communication']
+            )
             for rcpt in receipts
         ]
 

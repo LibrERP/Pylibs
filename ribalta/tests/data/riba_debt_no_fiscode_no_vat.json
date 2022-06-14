@@ -44,7 +44,8 @@
       "duedate_move_line": {
         "date_maturity": "2020-12-28",
         "amount_residual": 36.60
-      }
+      },
+      "communication": "Ciao :-)"
     },
 
     {
@@ -70,7 +71,8 @@
       "duedate_move_line": {
         "date_maturity": "2020-11-28",
         "amount_residual": 42.7
-      }
+      },
+      "communication": "Ciao :-)"
     },
 
     {
@@ -96,7 +98,8 @@
       "duedate_move_line": {
         "date_maturity": "2020-11-13",
         "amount_residual": 42.70
-      }
+      },
+      "communication": "Ciao :-)"
     }
 
   ]

@@ -29,7 +29,7 @@ def test_debt_errors():
         riba_doc = Document(**test_data.head)
 
         for rcpt in test_data.receipts:
-            riba_doc.add_receipt(Receipt(**rcpt))
+            riba_doc.add_receipt(Receipt(rcpt))
         # end for
     # end with
 

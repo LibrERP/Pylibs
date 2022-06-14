@@ -44,7 +44,8 @@
       "duedate_move_line": {
         "date_maturity": "2020-12-28",
         "amount_residual": 36.60
-      }
+      },
+      "communication": "FATT. FATT/2020/0069 DEL 29/10/2020 IMP 36.6"
     },
 
     {
@@ -70,7 +71,8 @@
       "duedate_move_line": {
         "date_maturity": "2020-11-28",
         "amount_residual": 42.7
-      }
+      },
+      "communication": "FATT. FATT/2020/0069 DEL 29/10/2020 IMP 42.7"
     },
 
     {
@@ -96,7 +98,8 @@
       "duedate_move_line": {
         "date_maturity": "2020-11-13",
         "amount_residual": 42.70
-      }
+      },
+      "communication": "FATT. FATT/2020/0069 DEL 29/10/2020 IMP 42.7"
     }
 
   ]
