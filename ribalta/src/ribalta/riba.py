@@ -366,7 +366,7 @@ class ReceiptGroup:
     @property
     def communication(self):
         # Merge the descriptions
-        msg = ", ".join([r.comm for r in self.grouped_receipts])
+        msg = ", ".join([r.communication for r in self.grouped_receipts])
         return msg
     # end communication
     
