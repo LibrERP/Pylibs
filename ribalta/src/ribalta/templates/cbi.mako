@@ -45,20 +45,8 @@
     # end fldsz
 
     def riferimento_al_debito(receipt):
-        if receipt.is_group:
-
-            # Build a description for each receipt
-            descriptions = map(
-                lambda r: f'{r.communication}',
-                receipt.grouped_receipts
-            )
-
-            # Merge the descriptions
-            msg = unidecode(f'Fatt: {", ".join(descriptions)}')
-
-        else:
-            msg = unidecode(receipt.communication)
-        # end if
+        # Get the communication message
+        msg = unidecode(receipt.communication)
 
         # Format the message and return the result
         msg_formatted = msg.ljust(80, ' ')[:80]

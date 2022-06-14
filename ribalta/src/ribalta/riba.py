@@ -362,6 +362,13 @@ class ReceiptGroup:
     def invoice_date(self):
         return self._r_ref.invoice_date
     # end invoice_date
+
+    @property
+    def communication(self):
+        # Merge the descriptions
+        msg = ", ".join([r.comm for r in self.grouped_receipts])
+        return msg
+    # end communication
     
     def __str__(self):
         d_name = self.debtor_name[:25].ljust(25, ' ')
@@ -578,7 +585,7 @@ class Document:
             cbi_document = cbi_template.render(doc=self, lines=lines_for_template)
             return cbi_document
 
-        except Exceptio as e:
+        except Exception as e:
             render_error_msg = exceptions.text_error_template().render()
 
             _logger.error(render_error_msg)
