@@ -110,7 +110,10 @@ class Field:
     # - - - - - - - - - - - - - - - - -
     # Metodi
     def __init__(
-            self, descriptor: FieldDescriptor, av2000: AV2000Terminal, form_modified_flag: FormModifiedFlag
+            self,
+            descriptor: FieldDescriptor,
+            av2000: AV2000Terminal,
+            form_modified_flag: FormModifiedFlag,
     ):
 
         cls = self.__class__
@@ -178,15 +181,20 @@ class Field:
             """
 
             while move_while():
+                max_updates = 50
+
                 pos = get_pos()
 
                 move_method()
 
-                # The following two instructions are here to ensure the
-                # terminal emulator has been updated before checking for
-                # cursor position
-                time.sleep(0.1)
-                self._av2000.send_seq('')
+                # The following while loop is here to ensure the terminal
+                # emulator has been updated before checking for cursor
+                # position
+                while pos == get_pos() and max_updates > 0:
+                    max_updates -= 1
+                    self._av2000.send_seq('')
+                    time.sleep(0.1)
+                # end if
 
                 if pos == get_pos():
                     self._av2000.print_screen()
@@ -596,6 +604,7 @@ class AbstractForm(AbstractPage, abc.ABC):
     @classmethod
     def fields_collector(cls, obj) -> typing.List[Field]:
         """
+        obj: a frozendict of Field objects, a tuple of Field objects or a single Field object
         :returns list of Fields objects for this Form. Fields are sorted by (line, start_column) ascending
         """
 
@@ -604,18 +613,20 @@ class AbstractForm(AbstractPage, abc.ABC):
                 cls.fields_collector(v)
                 for v in obj.values()
             ]
-            return list(heapq.merge(*res, key=lambda fld: (fld.line, fld.start)))
+            sorted_list = list(heapq.merge(*res, key=lambda fld: (fld.line, fld.start)))
         elif isinstance(obj, tuple):
             res = [
                 cls.fields_collector(i)
                 for i in obj
             ]
-            return list(heapq.merge(*res, key=lambda fld: (fld.line, fld.start)))
+            sorted_list = list(heapq.merge(*res, key=lambda fld: (fld.line, fld.start)))
         elif isinstance(obj, Field):
-            return [obj]
+            sorted_list = [obj]
         else:
             assert False, f'fields_collector found an unmanaged type: {type(obj)} --> {str(obj)}'
         # end if
+
+        return sorted_list
     # end walk
 
     def _save_and_back(self):
