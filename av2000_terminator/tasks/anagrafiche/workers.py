@@ -25,7 +25,10 @@ class SuppliersDownloader(AbstractReadWorker):
 
             tgt_id = ids_list[list_idx]['codice']
 
-            print(f'[{self.name} - {datetime.datetime.now()}] partner {tgt_id}] ({self._processed_items + 1}/{len(ids_list)})')
+            print(
+                f'[{self.name} - {datetime.datetime.now()}] '
+                f'partner {tgt_id}] ({self._processed_items + 1}/{len(ids_list)})'
+            )
 
             # Load supplier data
             # print(f'[{self.name} - {datetime.datetime.now()} - id: {tgt_id}] show_partner - begin')

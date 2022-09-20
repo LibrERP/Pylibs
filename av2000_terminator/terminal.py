@@ -17,7 +17,7 @@ from . misc.exceptions import DriverClosed, LoadingTimeout
 def ensure_open(method):
     """
     Ensures the connection to av2000 is open
-    before calling the decodated method.
+    before calling the decorated method.
     """
     
     def decorated_method(*args, **kwargs):
@@ -75,7 +75,7 @@ class AV2000Terminal:
         
         # Start AV2000 program
         print('Starting AV2000 interface')
-        # NOTE: "TERM" environment variable must be set to putty for F-keys
+        # NOTE: "TERM" environment variable must be set to "putty" for F-keys
         #       to work correctly
         self._terminal.input.line('TERM=putty ./av2000')
         time.sleep(2)
@@ -118,7 +118,7 @@ class AV2000Terminal:
     @property
     def modified_lines(self) -> typing.Set[int]:
         """
-        Return a set containig the indexes of lines modified by data received
+        Return a set containing the indexes of lines modified by data received
         from the server since last input sent.
         NOTE: This property is automatically cleared when the
               update() method gets called
@@ -220,6 +220,7 @@ class AV2000Terminal:
             # Check for timeout
             ts_now = datetime.datetime.now().timestamp()
             if (ts_now - ts_start) > timeout_sec:
+                self.print_screen()
                 raise LoadingTimeout(
                     'Timeout waiting for page to load',
                     av2000_driver=self,

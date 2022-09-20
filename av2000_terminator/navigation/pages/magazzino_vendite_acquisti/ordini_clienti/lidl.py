@@ -22,7 +22,6 @@ class TabellaClientiDestinatariLidl(AbstractPage):
         ll_modified = self.PAGE_LAST_LINE in self._av2000.modified_lines
 
         return name_ok and table_end_ok and ll_modified
-
     # end ready
 
     def extract_data(self):

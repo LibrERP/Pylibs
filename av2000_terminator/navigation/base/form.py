@@ -125,6 +125,7 @@ class Field:
         self._buffer = None
     # end __init__
 
+    @staticmethod
     def _require_writable(method):
 
         def check_writable(self, *args, **kwargs):
@@ -355,14 +356,229 @@ class Field:
 # end Field
 
 
+class JsonFieldsBuilder:
+
+    def __init__(self, json_file_path: Path, av2000: AV2000Terminal, form_modified: FormModifiedFlag):
+        self._json_file_path = json_file_path
+        self._av2000 = av2000
+        self._form_modified = form_modified
+    # end __init__
+
+    def get_fields(self):
+
+        # Read data from JSON file
+        with open(self._json_file_path, 'r') as json_file:
+            loaded_data = json.load(json_file, object_hook=self._field_factory)
+        # end with
+
+        # Freeze the data structures
+        frozen_data = self._freeze_data(loaded_data)
+
+        # Set the _my_fields variable
+        return frozen_data
+    # end load_json
+
+    def _field_factory(self, dct: dict):
+        if dct.get('__class__', '') == FieldDescriptor.__name__:
+            del dct['__class__']
+            return Field(
+                descriptor=FieldDescriptor(**dct),
+                av2000=self._av2000,
+                form_modified_flag=self._form_modified
+            )
+        else:
+            return dct
+        # end if
+    # end field_factory
+
+    @staticmethod
+    def _freeze_data(data):
+        if isinstance(data, dict):
+            return frozendict({
+                k: JsonFieldsBuilder._freeze_data(v) for k, v in data.items()
+            })
+        elif isinstance(data, list):
+            return tuple([JsonFieldsBuilder._freeze_data(i) for i in data])
+        else:
+            return data
+        # end if
+    # end freeze_data
+# end JsonFieldsBuilder
+
+
+class FieldsDetector:
+
+    def __init__(self, av2000: AV2000Terminal):
+        self._screen_size = av2000.actual_size
+        self._screen_chars = av2000.terminal_buffer
+        self._screen_lines = av2000.display_lines
+
+        self._fields_matrix = None
+        self._fields_list = None
+        self._fields_dict = None
+    # end __init__
+
+    @property
+    def fields_matrix(self) -> np.array:
+        """
+        Ritorna una matrice con le stesse dimensioni del terminale (righe e colonne) contenente
+        in ogni cella il valore:
+          - False se la cella è una cella ordinaria (testo o sfondo)
+          - True se la cella è parte di un campo (porzione dello schermo per inserimento dati)
+        """
+
+        if self._fields_matrix is None:
+            # 2 - Analisi matrice per creazione di una lista di campi. Il risultato dell'analisi è
+            #     una lista di namedtuple di tipo FieldDescriptor
+            fields_matrix = np.zeros(self._screen_size, np.bool)
+
+            for row_key, row_data in sorted(self._screen_chars.items(), key=lambda x: x[0]):
+
+                for col_key, col_data in sorted(row_data.items(), key=lambda x: x[0]):
+                    row_idx = int(row_key)
+                    col_idx = int(col_key)
+                    char = col_data
+
+                    fields_matrix[row_idx][col_idx] = char.reverse and True or False
+
+                    # end for
+            # end for
+
+            self._fields_matrix = fields_matrix
+        # end if
+
+        return self._fields_matrix
+    # end fields_matrix
+
+    @property
+    def fields_list(self) -> typing.List[FieldDescriptor]:
+        """
+        Analisi matrice per creazione di una lista di campi. Il risultato
+        dell'analisi è una lista di namedtuple di tipo FieldDescriptor
+        """
+
+        if self._fields_list is None:
+            fields_list = list()
+
+            for line_idx, current_line in enumerate(self.fields_matrix):
+
+                label_start = 0
+                current_field = None
+
+                for char_idx, is_field in enumerate(current_line):
+
+                    is_last_char = char_idx == len(current_line) - 1
+
+                    if is_field:
+
+                        # Se mi trovo su una posizione che appartiene ad un campo
+                        # e non ho un oggetto Field attivo ne creo uno, lo assegno
+                        # alla variabile current_field e lo aggiungo alla lista
+                        # dei campi trovati
+                        if current_field is None:
+                            label = self._screen_lines[line_idx][label_start:char_idx].strip()
+
+                            current_field = FieldDescriptor(
+                                line=line_idx,
+                                start=char_idx,
+                                label=label,
+                                size=0,
+                            )
+
+                            fields_list.append(current_field)
+                        # end if
+
+                        # Se mi trovo sull'ultima posizione della righa chiudo
+                        # l'oggetto Field attivo
+                        if is_last_char:
+                            assert current_field
+
+                            current_field.size = char_idx - current_field.start + 1
+                            fields_list.append(current_field)
+                            current_field = None
+                        # end if
+
+                    else:
+
+                        # Se mi trovo su una posizione che NON appartiene ad un campo
+                        # chiudo l'eventuale oggetto Field attivo assegnando la
+                        # lunghezza e azzero la variabile current_field
+                        if current_field is not None:
+                            current_field.size = char_idx - current_field.start
+                            current_field = None
+                            label_start = char_idx
+                        # end if
+                    # end if
+                # end for
+            # end for
+            self._fields_list = fields_list
+        # end if
+
+        return self._fields_list
+    # end fields_list
+
+    def fields_dict(self) -> typing.Dict[str, FieldDescriptor]:
+
+        if self._fields_dict is None:
+            counters = collections.defaultdict(int)
+            fields_dict = dict()
+
+            for fld in self._fields_list:
+
+                normalized_key = fld.label.replace(' ', '_').lower()
+
+                if normalized_key in counters:
+                    suffix = counters[normalized_key]
+                    dict_key = f'{normalized_key}_{suffix:02d}'
+                else:
+                    dict_key = normalized_key
+                # end if
+
+                counters[normalized_key] += 1
+                fields_dict[dict_key] = fld
+            # end for
+
+            self._fields_dict = fields_dict
+        # end if
+
+        return self._fields_dict
+    # end fields_dict
+
+    def to_json(self, dst: typing.Union[str, Path], layout: str = 'dict') -> None:
+        """
+        Write inferred fields to file in JSON format.
+        :param dst: path of the output JSON file
+        :param layout: 'dict' or 'list'
+        :return: Nothing
+        """
+        dst_path = Path(dst)
+
+        with dst_path.open('w') as dst_file:
+            if layout == 'dict':
+                json.dump(self._fields_dict, dst_file, indent=2, cls=FieldDescriptor.JSONEncoder)
+            elif layout == 'list':
+                json.dump(self._fields_list, dst_file, indent=2, cls=FieldDescriptor.JSONEncoder)
+            else:
+                assert False, 'Invalid layout specified'
+            # end if
+        # end with
+    # end fields_dict
+
+
 class AbstractForm(AbstractPage, abc.ABC):
 
+    # - - - - - - - - - - - -
+    # Costanti di class
+    DATA_FILE_PATH = None
+
+    # - - - - - - - - - - - -
+    # Eccezioni
     class FormError(Exception):
         pass
     # end FormError
 
-    DATA_FILE_PATH = None
-
+    # - - - - - - - - - - - -
+    # Metodi
     def __init__(self, *args, **kwargs):
 
         super().__init__(*args, **kwargs)
@@ -370,8 +586,12 @@ class AbstractForm(AbstractPage, abc.ABC):
         self._form_modified_flag: FormModifiedFlag = FormModifiedFlag()
 
         if self.DATA_FILE_PATH:
-            self._my_fields = None
-            self._fields_from_json()
+            json_fields_builder = JsonFieldsBuilder(
+                json_file_path=self.DATA_FILE_PATH,
+                av2000=self._av2000,
+                form_modified=self._form_modified_flag
+            )
+            self._my_fields = json_fields_builder.get_fields()
         else:
             self._my_fields: typing.List[Field] = list()
         # end if
@@ -380,12 +600,7 @@ class AbstractForm(AbstractPage, abc.ABC):
     @property
     def modified(self) -> bool:
         return self._form_modified_flag.modified
-    # end if
-
-    @property
-    def data(self) -> dict:
-        return self.fields_values_collector(self._my_fields)
-    # end
+    # end modified
 
     @property
     def fields(self):
@@ -394,176 +609,13 @@ class AbstractForm(AbstractPage, abc.ABC):
 
     @property
     def fields_list(self) -> typing.List[Field]:
-        return self.fields_collector(self._my_fields)
-    # end
-
-    @property
-    def auto_fields_matrix(self) -> np.array:
-        """
-        Ritorna una matrice con le stesse dimensioni del terminale (righe e colonne) contenente
-        in ogni cella il valore:
-          - False se la cella è una cella ordinaria (testo o sfondo)
-          - True se la cella è parte di un campo (porzione dello schermo per inserimento dati)
-        """
-
-        # 2 - Analisi matrice per creazione di una lista di campi. Il risultato dell'analisi è
-        #     una lista di namedtuple di tipo FieldDescriptor
-        fields_matrix = np.zeros(self._av2000.actual_size, np.bool)
-
-        for row_key, row_data in sorted(self._av2000.terminal_buffer.items(), key=lambda x: x[0]):
-
-            for col_key, col_data in sorted(row_data.items(), key=lambda x: x[0]):
-                row_idx = int(row_key)
-                col_idx = int(col_key)
-                char = col_data
-
-                fields_matrix[row_idx][col_idx] = char.reverse and True or False
-
-                # end for
-        # end for
-
-        return fields_matrix
-    # end fields_matrix
-
-    @property
-    def auto_fields_list(self) -> typing.List[FieldDescriptor]:
-        """
-        Analisi matrice per creazione di una lista di campi. Il risultato
-        dell'analisi è una lista di namedtuple di tipo FieldDescriptor
-        """
-        fields_list = list()
-
-        for line_idx, current_line in enumerate(self.auto_fields_matrix):
-
-            label_start = 0
-            current_field = None
-
-            for char_idx, is_field in enumerate(current_line):
-
-                is_last_char = char_idx == len(current_line) - 1
-
-                if is_field:
-
-                    # Se mi trovo su una posizione che appartiene ad un campo
-                    # e non ho un oggetto Field attivo ne creo uno, lo assegno
-                    # alla variabile current_field e lo aggiungo alla lista
-                    # dei campi trovati
-                    if current_field is None:
-                        label = self._av2000.display_lines[line_idx][label_start:char_idx].strip()
-
-                        current_field = FieldDescriptor(
-                            line=line_idx,
-                            start=char_idx,
-                            label=label,
-                            size=0,
-                        )
-
-                        fields_list.append(current_field)
-                    # end if
-
-                    # Se mi trovo sull'ultima posizione della righa chiudo
-                    # l'oggetto Field attivo
-                    if is_last_char:
-                        assert current_field
-
-                        current_field.size = char_idx - current_field.start + 1
-                        fields_list.append(current_field)
-                        current_field = None
-                    # end if
-
-                else:
-
-                    # Se mi trovo su una posizione che NON appartiene ad un campo
-                    # chiudo l'eventuale oggetto Field attivo assegnando la
-                    # lunghezza e azzero la variabile current_field
-                    if current_field is not None:
-                        current_field.size = char_idx - current_field.start
-                        current_field = None
-                        label_start = char_idx
-                    # end if
-                # end if
-            # end for
-        # end for
-
-        return fields_list
+        return self._fields_sorter(self._my_fields)
     # end fields_list
 
     @property
-    def auto_fields_dict(self) -> typing.Dict[str, FieldDescriptor]:
-
-        counters = collections.defaultdict(int)
-        fields_dict = dict()
-
-        for fld in self.auto_fields_list:
-
-            normalized_key = fld.label.replace(' ', '_').lower()
-
-            if normalized_key in counters:
-                suffix = counters[normalized_key]
-                dict_key = f'{normalized_key}_{suffix:02d}'
-            else:
-                dict_key = normalized_key
-            # end if
-
-            counters[normalized_key] += 1
-            fields_dict[dict_key] = fld
-        # end for
-
-        return fields_dict
-    # end auto_fields_dict
-
-    def auto_fields_export(self, dst: typing.Union[str, Path], layout: str = 'dict') -> None:
-        dst_path = Path(dst)
-
-        with dst_path.open('w') as dst_file:
-            if layout == 'dict':
-                json.dump(self.auto_fields_dict, dst_file, indent=2, cls=FieldDescriptor.JSONEncoder)
-            elif layout == 'list':
-                json.dump(self.auto_fields_list, dst_file, indent=2, cls=FieldDescriptor.JSONEncoder)
-            else:
-                assert False, 'Invalid layout specified'
-            # end if
-        # end with
-    # end fields_dict
-
-    def _fields_from_json(self) -> None:
-
-        def field_factory(dct: dict):
-            if dct.get('__class__', '') == FieldDescriptor.__name__:
-                del dct['__class__']
-                return Field(
-                    descriptor=FieldDescriptor(**dct),
-                    av2000=self._av2000,
-                    form_modified_flag=self._form_modified_flag
-                )
-            else:
-                return dct
-            # end if
-        # end field_factory
-
-        def freeze_data(data):
-            if isinstance(data, dict):
-                return frozendict({
-                    k: freeze_data(v) for k, v in data.items()
-                })
-            elif isinstance(data, list):
-                return tuple([freeze_data(i) for i in data])
-            else:
-                return data
-            # end if
-        # end freeze_data
-
-        # Read data from JSON file
-        with open(self.DATA_FILE_PATH, 'r') as json_file:
-            loaded_data = json.load(json_file, object_hook=field_factory)
-        # end with
-
-        # Freeze the data structures
-        frozen_data = freeze_data(loaded_data)
-
-        # Set the _my_fields variable
-        self._my_fields = frozen_data
-    # end load_json
+    def data(self) -> dict:
+        return self._fields_values_collector(self._my_fields)
+    # end data
 
     def flush(self):
         # Write changes on the screen
@@ -573,50 +625,34 @@ class AbstractForm(AbstractPage, abc.ABC):
                 field.flush()
             # end if
         # end for
-    # end write
+    # end flush
 
     def commit_changes(self):
         self.flush()
         self._save_and_back()
     # end commit
 
-    @classmethod
-    def fields_values_collector(cls, obj: typing.Union[dict, list, Field]) -> typing.Union[dict, list, str]:
+    def detect_fields(self) -> FieldsDetector:
+        return FieldsDetector(self._av2000)
+    # end detect_fields
 
-        if isinstance(obj, frozendict):
-            return {
-                k: cls.fields_values_collector(v)
-                for k, v in obj.items()
-            }
-        elif isinstance(obj, tuple):
-            result = [
-                cls.fields_values_collector(i)
-                for i in obj
-            ]
-            return any(result) and result or list()
-        elif isinstance(obj, Field):
-            return obj.data
-        else:
-            assert False
-        # end if
-    # end fields_values_collector
-
-    @classmethod
-    def fields_collector(cls, obj) -> typing.List[Field]:
+    @staticmethod
+    def _fields_sorter(obj: typing.Union[frozendict, typing.Tuple, Field]) -> typing.List[Field]:
         """
+        Form's fields sorted by (line, start_column) ascending.
         obj: a frozendict of Field objects, a tuple of Field objects or a single Field object
         :returns list of Fields objects for this Form. Fields are sorted by (line, start_column) ascending
         """
 
         if isinstance(obj, frozendict):
             res = [
-                cls.fields_collector(v)
+                AbstractForm._fields_sorter(v)
                 for v in obj.values()
             ]
             sorted_list = list(heapq.merge(*res, key=lambda fld: (fld.line, fld.start)))
         elif isinstance(obj, tuple):
             res = [
-                cls.fields_collector(i)
+                AbstractForm._fields_sorter(i)
                 for i in obj
             ]
             sorted_list = list(heapq.merge(*res, key=lambda fld: (fld.line, fld.start)))
@@ -627,10 +663,35 @@ class AbstractForm(AbstractPage, abc.ABC):
         # end if
 
         return sorted_list
-    # end walk
+    # end _fields_sorter
+
+    @staticmethod
+    def _fields_values_collector(obj: typing.Union[frozendict, list, Field]) -> typing.Union[dict, list, str]:
+        """
+        Values for the fields of this form as dict with the field name as key.
+        :param obj:
+        :return:
+        """
+        if isinstance(obj, frozendict):
+            return {
+                k: AbstractForm._fields_values_collector(v)
+                for k, v in obj.items()
+            }
+        elif isinstance(obj, tuple):
+            result = [
+                AbstractForm._fields_values_collector(i)
+                for i in obj
+            ]
+            return any(result) and result or list()
+        elif isinstance(obj, Field):
+            return obj.data
+        else:
+            assert False
+        # end if
+    # end _fields_values_collector
 
     def _save_and_back(self):
         """Save data on the screen to the disk"""
         self._av2000.send_seq(self._av2000.RETURN_CHAR)
-    # end commit
+    # end _save_and_back
 # end Form

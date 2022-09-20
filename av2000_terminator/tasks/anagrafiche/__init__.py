@@ -1,1 +1,5 @@
-from . tasks import suppliers_list, suppliers_get_batch, suppliers_get_all, SuppliersWriter
+from . tasks import (
+    AnagraficheID,
+    SuppliersReader,
+    SuppliersWriter,
+)
