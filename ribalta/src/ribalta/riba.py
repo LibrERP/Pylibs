@@ -466,12 +466,12 @@ class Document:
             result = self.creditor_fiscalcode
         elif self.creditor_vat_number:
             result = self.creditor_vat_number
-            # Remove IT from the beginning of the VAT number ....some banks do not like it
-            result = re.sub(pattern=r'^[iI][tT]', repl='', string=result)
         else:
             result = ''
         # end if
 
+        # Remove IT from the beginning of the VAT number ....some banks do not like it
+        result = re.sub(pattern=r'^[iI][tT]', repl='', string=result)
         return result
     # end creditor_fiscode_or_vat
 
