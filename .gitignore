@@ -131,6 +131,11 @@ dmypy.json
 # PyCharm files
 .idea/
 
+# Virtual envs
+**/vpy3.7
+**/vpy3.8
+**/vpy3.9
+**/vpy3.10
 
 # # # # # # # # # # #
 # ribalta library
