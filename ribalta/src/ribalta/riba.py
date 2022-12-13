@@ -462,7 +462,17 @@ class Document:
 
     @property
     def creditor_fiscode_or_vat(self):
-        return self.creditor_fiscalcode or self.creditor_vat_number
+        if self.creditor_fiscalcode:
+            result = self.creditor_fiscalcode
+        elif self.creditor_vat_number:
+            result = self.creditor_vat_number
+            # Remove IT from the beginning of the VAT number ....some banks do not like it
+            result = re.sub(pattern=r'^[iI][tT]', repl='', string=result)
+        else:
+            result = ''
+        # end if
+
+        return result
     # end creditor_fiscode_or_vat
 
     @property
