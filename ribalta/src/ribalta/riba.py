@@ -45,7 +45,12 @@ class Receipt:
         self._invoice = payment_line.move_line_id.invoice_id
         self._debtor_partner = payment_line.partner_id
         self._debtor_bank_account = payment_line.partner_bank_id
-        self._communication = payment_line.communication
+
+        if payment_line.move_line_id.invoice_id:
+            self._communication = payment_line.communication
+        else:
+            self._communication = payment_line.move_line_id.name
+        # end if
 
         # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
         # Sanity checks
@@ -209,6 +214,17 @@ class Receipt:
             self.duedate
         )
     # end grouping_key
+
+    @property
+    def description(self):
+        if self.invoice_date:
+            desc = f'{self.invoice_number} ({self.invoice_date:%Y-%m-%d}) € {self.amount:.2f}'
+        else:
+            desc = f'{self.invoice_number} € {self.amount:.2f}'
+        # end if
+
+        return desc
+    # end description
     
     def __str__(self):
         name = self.debtor_name[:25].ljust(25, ' ')
@@ -217,9 +233,14 @@ class Receipt:
         inv_date = self.invoice_date
         due_date = self.duedate
         amount = self.amount
-        return f'{name} ({vat}) - ' \
-               f'{inv_num} del {inv_date:%Y-%m-%d} - ' \
-               f'scad: {due_date:%Y-%m-%d} € {amount}'
+
+        inv_date_str = inv_date and f'del {inv_date:%Y-%m-%d} ' or ''
+
+        return (
+            f'{name} ({vat}) - '
+            f'{inv_num} {inv_date_str}- '
+            f'scad: {due_date:%Y-%m-%d} € {amount}'
+        )
     # end __str__
     
     def __repr__(self):
@@ -256,7 +277,7 @@ class ReceiptGroup:
         # Description of the group listing the numbers of the invoices
         # referred by the grouped lines
         self._desc = ', '.join(
-            map(lambda r: f'{r.invoice_number} ({r.invoice_date:%Y-%m-%d}) € {r.amount:.2f}', self._receipts)
+            map(lambda r: r.description, self._receipts)
         )
         
         # Total amount of the group
