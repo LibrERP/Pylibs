@@ -144,7 +144,7 @@ dmypy.json
 ribalta/dist
 ribalta/.ipynb_checkpoints
 ribalta/.pytest_cache
-
+.trackerignore
 
 # # # # # # # # # # # # # # #
 # AV2000 terminator library
