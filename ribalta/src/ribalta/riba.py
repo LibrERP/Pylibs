@@ -135,7 +135,7 @@ class Receipt:
                 f'Fiscalcode and VAT missing for debtor {self.debtor_name}'
             )
         # end if
-        return self.debtor_fiscalcode or re.sub('^IT', '', self.debtor_vat_number)
+        return re.sub('^IT', '', self.debtor_vat_number) or self.debtor_fiscalcode
     # end debtor_fiscode_or_vat
 
     @property
